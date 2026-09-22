@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Setup — My_Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="onboarding-page">
+  <div style="position:relative;z-index:1;width:100%;max-width:600px">
+    <!-- Steps Indicator -->
+    <div class="steps-indicator">
+      <div class="step-dot active" id="dot-1"></div>
+      <div class="step-dot" id="dot-2"></div>
+      <div class="step-dot" id="dot-3"></div>
+      <div class="step-dot" id="dot-4"></div>
+    </div>
+
+    <!-- Step 1: Welcome -->
+    <div class="onboarding-card onboarding-step" id="step-1">
+      <div class="onboarding-icon">👋</div>
+      <h2>Welcome, <%= user ? user.name.split(' ')[0] : 'there' %>!</h2>
+      <p>My_Login will scan your Gmail inbox <strong>metadata</strong> to discover every service you've ever signed up for. We'll then check for breaches and score your risk. Let's get started.</p>
+      <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:24px;text-align:left">
+        <div style="font-size:0.8rem;font-weight:600;color:var(--text-secondary);margin-bottom:10px">WHAT WE SCAN FOR</div>
+        <div class="perm-item"><span class="perm-check">✓</span><div class="perm-text"><strong>Sender addresses</strong> Who sent you emails (e.g. noreply@spotify.com)</div></div>
+        <div class="perm-item"><span class="perm-check">✓</span><div class="perm-text"><strong>Subject line keywords</strong> e.g. "Welcome to", "Your receipt from", "Verify your"</div></div>
+        <div class="perm-item"><span class="perm-check">✓</span><div class="perm-text"><strong>Email timestamps</strong> When you first signed up</div></div>
+        <div class="perm-item"><span class="perm-deny">✕</span><div class="perm-text" style="color:var(--text-muted)"><strong style="color:var(--text-muted)">Email body</strong> Never read or stored</div></div>
+      </div>
+      <button class="btn btn-primary btn-lg w-full" onclick="nextStep()" style="justify-content:center">
+        Continue — Connect Gmail →
+      </button>
+    </div>
+
+    <!-- Step 2: Connect Gmail -->
+    <div class="onboarding-card onboarding-step" id="step-2" style="display:none">
+      <div class="onboarding-icon">📧</div>
+      <h2>Connect your Gmail</h2>
+      <p>We need read-only access to your Gmail metadata. This is a separate permission from your Google login — you're in full control.</p>
+      <div class="gmail-permission-box">
+        <div style="font-size:0.8rem;font-weight:600;color:var(--text-secondary);margin-bottom:12px">PERMISSION REQUESTED</div>
+        <div class="perm-item"><span class="perm-check">✓</span><div class="perm-text"><strong>gmail.readonly</strong> Read-only access to email metadata only</div></div>
+        <div class="perm-item"><span class="perm-check">✓</span><div class="perm-text"><strong>You can revoke anytime</strong> From Google Account → Security → Third-party access</div></div>
+        <div class="perm-item"><span class="perm-deny">✕</span><div class="perm-text" style="color:var(--text-muted)"><strong style="color:var(--text-muted)">No email body access</strong> Scans sender + subject only</div></div>
+        <div class="perm-item"><span class="perm-deny">✕</span><div class="perm-text" style="color:var(--text-muted)"><strong style="color:var(--text-muted)">No send access</strong> We can never send emails as you</div></div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-ghost" onclick="prevStep()">← Back</button>
+        <button class="btn btn-primary" style="flex:1;justify-content:center" onclick="nextStep()">
+          🔗 Connect kumarshivam51238@gmail.com →
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 3: Scanning -->
+    <div class="onboarding-card onboarding-step" id="step-3" style="display:none">
+      <div class="scan-animation">
+        <div class="scan-ring scan-ring-1"></div>
+        <div class="scan-ring scan-ring-2"></div>
+        <div class="scan-center">📧</div>
+      </div>
+      <h2>Scanning your inbox...</h2>
+      <p>Analyzing email metadata to discover all your accounts. This usually takes 30–60 seconds.</p>
+      <div class="scan-progress-bar">
+        <div class="scan-progress-fill"></div>
+      </div>
+      <div class="scan-status" id="scan-status-text">Connecting to Gmail API...</div>
+    </div>
+
+    <!-- Step 4: Complete -->
+    <div class="onboarding-card onboarding-step" id="step-4" style="display:none">
+      <div style="font-size:3.5rem;margin-bottom:16px">🎉</div>
+      <h2>Scan complete!</h2>
+      <p>We found <strong style="color:var(--text-primary)">71 accounts</strong> linked to your Gmail. Here's a quick summary:</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:24px 0">
+        <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center">
+          <div style="font-size:1.8rem;font-weight:800;color:var(--text-primary)">71</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)">Accounts found</div>
+        </div>
+        <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:16px;text-align:center">
+          <div style="font-size:1.8rem;font-weight:800;color:var(--risk-critical)">6</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)">Active breaches</div>
+        </div>
+        <div style="background:rgba(249,115,22,0.08);border:1px solid rgba(249,115,22,0.2);border-radius:12px;padding:16px;text-align:center">
+          <div style="font-size:1.8rem;font-weight:800;color:var(--risk-high)">4</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)">High risk</div>
+        </div>
+        <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:12px;padding:16px;text-align:center">
+          <div style="font-size:1.8rem;font-weight:800;color:var(--risk-moderate)">54</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)">Security score</div>
+        </div>
+      </div>
+      <a href="/dashboard" class="btn btn-primary btn-lg w-full" style="justify-content:center;display:flex">
+        📊 Go to Dashboard →
+      </a>
+    </div>
+  </div>
+</div>
+<script src="/js/app.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', initOnboarding);
+</script>
+</body>
+</html>

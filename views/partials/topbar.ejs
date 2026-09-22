@@ -1,0 +1,35 @@
+<header class="topbar">
+  <div class="topbar-title">
+    <% if (typeof pageTitle !== 'undefined') { %>
+      <%= pageTitle %>
+    <% } %>
+  </div>
+
+  <% if (typeof showSearch !== 'undefined' && showSearch) { %>
+  <form class="topbar-search" action="/dashboard" method="GET">
+    <span class="search-icon">🔍</span>
+    <input
+      type="text"
+      id="topbar-search-input"
+      name="search"
+      placeholder="Search accounts, services..."
+      value="<%= typeof search !== 'undefined' ? search : '' %>"
+      autocomplete="off"
+    >
+    <% if (typeof activeCategory !== 'undefined' && activeCategory !== 'all') { %>
+      <input type="hidden" name="category" value="<%= activeCategory %>">
+    <% } %>
+  </form>
+  <% } %>
+
+  <div class="topbar-actions">
+    <a href="/notifications" class="icon-btn" title="Notifications">
+      🔔
+      <% if (typeof notifications !== 'undefined' && notifications > 0) { %>
+        <span class="notif-dot"></span>
+      <% } %>
+    </a>
+    <a href="/settings" class="icon-btn" title="Settings">⚙️</a>
+    <a href="/login" class="icon-btn" title="Logout" onclick="return confirm('Sign out?')">🚪</a>
+  </div>
+</header>

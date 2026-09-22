@@ -10,10 +10,10 @@
 
 | Layer | Technology |
 |---|---|
-| **Backend** | Node.js + Express.js + TypeScript |
+| **Backend** | Node.js + Express.js + javaScript|
 | **Database** | MongoDB + Mongoose |
 | **Cache / Queue** | Redis + BullMQ |
-| **Frontend** | React + TypeScript + Vite |
+| **Frontend** | ejs + html + css  |
 | **Mobile** | React Native + Expo (iOS + Android) |
 | **Validation** | Zod |
 | **Auth** | JWT + bcrypt + Google OAuth |
@@ -34,6 +34,20 @@ Connect Gmail → Scan Email Metadata → Discover Accounts → Assess Risk → 
 3. **Risk Scoring** — Transparent, deterministic per-account risk score (breach, inactivity, category, 2FA).
 4. **Security Center** — Aggregate security score 0–100 with priority action list.
 5. **Account Cleanup** — Guided flow to official deletion pages.
+
+---
+
+> ## ⚠️ CRITICAL LAUNCH REMINDER — READ BEFORE PHASE 3
+>
+> **The moment the "Connect Gmail" button works — stop and apply for Google App Verification immediately.**
+>
+> - `gmail.readonly` is a **Restricted Scope**. Google must personally review and approve your app before ANY real user (not just you) can connect Gmail.
+> - Without approval → **your entire product is blocked for the public.** The app runs, but nobody can use it.
+> - Approval takes **2 to 8 weeks.** Google can reject and make you start over.
+> - You need: ✅ Live Privacy Policy URL  ✅ Demo video of Gmail connect flow  ✅ Written justification for the scope
+>
+> **Do NOT wait until launch day. Apply the moment Phase 3 is working.**
+> See: [`plans/04_phase3_gmail_integration.md`](plans/04_phase3_gmail_integration.md) → Section 3.1
 
 ---
 

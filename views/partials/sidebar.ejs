@@ -1,0 +1,51 @@
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">M</div>
+    <div class="logo-text">My<span>_Login</span></div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Overview</div>
+    <a href="/dashboard" class="nav-link" id="nav-dashboard">
+      <span class="nav-icon">⊞</span> Dashboard
+    </a>
+    <a href="/security" class="nav-link" id="nav-security">
+      <span class="nav-icon">🛡️</span> Security Center
+    </a>
+
+    <div class="nav-section-label">Monitor</div>
+    <a href="/breaches" class="nav-link" id="nav-breaches">
+      <span class="nav-icon">🔴</span> Breach Monitor
+      <% if (typeof notifications !== 'undefined' && notifications > 0) { %>
+        <span class="nav-badge"><%= notifications %></span>
+      <% } %>
+    </a>
+    <a href="/emails" class="nav-link" id="nav-emails">
+      <span class="nav-icon">📧</span> Email Accounts
+    </a>
+
+    <div class="nav-section-label">Actions</div>
+    <a href="/cleanup" class="nav-link" id="nav-cleanup">
+      <span class="nav-icon">🧹</span> Cleanup Center
+    </a>
+    <a href="/notifications" class="nav-link" id="nav-notifications">
+      <span class="nav-icon">🔔</span> Notifications
+      <% if (typeof notifications !== 'undefined' && notifications > 0) { %>
+        <span class="nav-badge"><%= notifications %></span>
+      <% } %>
+    </a>
+
+    <div class="nav-section-label">Account</div>
+    <a href="/settings" class="nav-link" id="nav-settings">
+      <span class="nav-icon">⚙️</span> Settings
+    </a>
+  </nav>
+
+  <div class="sidebar-user">
+    <div class="user-avatar"><%= user ? user.avatar : 'U' %></div>
+    <div class="user-info">
+      <div class="user-name"><%= user ? user.name : 'User' %></div>
+      <div class="user-plan"><%= user ? user.plan : 'Free' %> Plan</div>
+    </div>
+  </div>
+</aside>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security Center — My_Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <%- include('partials/sidebar', { user, notifications, page }) %>
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-title">Security Center</div>
+      <div class="topbar-actions">
+        <a href="/notifications" class="icon-btn">🔔<% if(notifications>0){%><span class="notif-dot"></span><%}%></a>
+        <a href="/settings" class="icon-btn">⚙️</a>
+      </div>
+    </header>
+    <div class="page-body">
+      <div class="page-header">
+        <h1>Security Center</h1>
+        <p class="page-subtitle">Your complete security overview — breaches, risk scores, and priority actions.</p>
+      </div>
+
+      <!-- Score + Breakdown -->
+      <div class="score-section">
+        <%
+          let scoreClass = 'score-critical';
+          if (security.score >= 85) scoreClass = 'score-excellent';
+          else if (security.score >= 70) scoreClass = 'score-good';
+          else if (security.score >= 50) scoreClass = 'score-moderate';
+          else if (security.score >= 30) scoreClass = 'score-at-risk';
+        %>
+        <div class="score-card <%= scoreClass %>">
+          <div style="font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:16px">Security Score</div>
+          <div class="score-gauge-wrap">
+            <svg class="score-gauge-svg" width="160" height="160" viewBox="0 0 160 160">
+              <circle class="gauge-bg" cx="80" cy="80" r="60"/>
+              <circle class="gauge-fill" cx="80" cy="80" r="60" data-score="<%= security.score %>"/>
+            </svg>
+            <div class="gauge-score">
+              <span class="gauge-number"><%= security.score %></span>
+              <span class="gauge-label-txt"><%= security.label %></span>
+            </div>
+          </div>
+          <div class="score-updated">Updated <%= security.lastUpdated %></div>
+        </div>
+
+        <div class="breakdown-card">
+          <div style="font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:14px">Score Breakdown</div>
+          <div class="breakdown-row">
+            <span class="breakdown-label">Base score</span>
+            <span class="breakdown-points points-positive"><%= security.breakdown.base %></span>
+          </div>
+          <% security.breakdown.deductions.forEach(function(d) { %>
+          <div class="breakdown-row">
+            <span class="breakdown-label"><%= d.reason %></span>
+            <span class="breakdown-points points-negative"><%= d.points %></span>
+          </div>
+          <% }) %>
+          <div class="breakdown-row" style="border-top:1px solid var(--border);padding-top:10px;margin-top:4px">
+            <span class="breakdown-label" style="font-weight:700;color:var(--text-primary)">Current Score</span>
+            <span class="breakdown-points points-total" style="font-size:1.1rem"><%= security.score %> <span style="font-size:0.8rem;color:var(--text-muted)"><%= security.label %></span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <a href="/security?tab=overview" class="tab-btn <%= tab === 'overview' ? 'active' : '' %>">Overview</a>
+        <a href="/security?tab=breaches" class="tab-btn <%= tab === 'breaches' ? 'active' : '' %>">Breaches (<%= breachedAccounts.length %>)</a>
+        <a href="/security?tab=risk" class="tab-btn <%= tab === 'risk' ? 'active' : '' %>">Risk Scores</a>
+        <a href="/security?tab=twofa" class="tab-btn <%= tab === 'twofa' ? 'active' : '' %>">2FA Status</a>
+        <a href="/security?tab=inactive" class="tab-btn <%= tab === 'inactive' ? 'active' : '' %>">Inactive (<%= inactiveAccounts.length %>)</a>
+      </div>
+
+      <% if (tab === 'overview') { %>
+        <div style="font-size:0.7rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:12px">Priority Issues — sorted by severity</div>
+        <div class="issues-list">
+          <% security.issues.forEach(function(issue) { %>
+          <div class="issue-item">
+            <span class="issue-icon"><%= issue.icon %></span>
+            <div class="issue-body">
+              <div class="issue-title"><%= issue.title %></div>
+              <div class="issue-desc"><%= issue.description %></div>
+            </div>
+            <span class="issue-priority priority-<%= issue.priority.toLowerCase() %>"><%= issue.priority %></span>
+            <a href="<%= issue.cta === 'View Breaches' ? '/breaches' : issue.cta === 'Cleanup Now' ? '/cleanup' : '/security?tab=risk' %>"
+               class="btn btn-ghost btn-sm"><%= issue.cta %> →</a>
+          </div>
+          <% }) %>
+        </div>
+
+      <% } else if (tab === 'breaches') { %>
+        <% breachedAccounts.forEach(function(account) { %>
+          <div class="breach-card">
+            <div class="breach-header">
+              <div class="breach-service">🚨 <%= account.name %></div>
+              <span class="risk-badge critical"><span class="dot"></span>CRITICAL</span>
+            </div>
+            <div class="breach-email">📧 <%= account.email %></div>
+            <div style="display:flex;gap:8px;margin-top:10px">
+              <a href="https://<%= account.domain %>" target="_blank" class="btn btn-ghost btn-sm">🌐 Open Site</a>
+              <a href="/cleanup" class="btn btn-danger btn-sm">🗑️ Cleanup</a>
+            </div>
+          </div>
+        <% }) %>
+
+      <% } else if (tab === 'risk') { %>
+        <div class="accounts-list">
+          <% const sortedByRisk = highRiskAccounts.slice().sort((a,b) => b.riskScore - a.riskScore); %>
+          <% sortedByRisk.forEach(function(account) { %>
+            <% const logos = {spotify:'🎵',netflix:'🎬',youtube:'▶️',github:'🐱',paypal:'💰',amazon:'📦',coinbase:'₿',dropbox:'📦',lastfm:'🎵',adobe:'🅰️',quora:'❓',tumblr:'📝',pinterest:'📌',digitalocean:'🌊',npm:'📦',xbox:'🟢',etsy:'🎨',soundcloud:'🔊'}; %>
+            <div class="account-list-row risk-<%= account.riskLevel %>">
+              <div class="list-logo"><%= logos[account.logo] || account.name.charAt(0) %></div>
+              <div class="list-main">
+                <div class="list-name"><%= account.name %> <% if(account.isBreached){%><span style="color:var(--risk-critical);font-size:0.7rem">🚨</span><%}%></div>
+                <div class="list-sub"><%= account.category %></div>
+              </div>
+              <div style="flex:1;padding:0 16px">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div style="flex:1;background:var(--bg-elevated);border-radius:99px;height:6px;overflow:hidden">
+                    <div style="height:100%;width:<%= account.riskScore %>%;background:<%= account.riskLevel === 'critical' ? 'var(--risk-critical)' : account.riskLevel === 'high' ? 'var(--risk-high)' : 'var(--risk-moderate)' %>;border-radius:99px"></div>
+                  </div>
+                  <span style="font-size:0.8rem;font-weight:700;color:var(--text-primary);min-width:30px"><%= account.riskScore %></span>
+                </div>
+              </div>
+              <span class="risk-badge <%= account.riskLevel %>"><span class="dot"></span><%= account.riskLevel.toUpperCase() %></span>
+            </div>
+          <% }) %>
+        </div>
+
+      <% } else if (tab === 'twofa') { %>
+        <div class="grid-2">
+          <div>
+            <div style="font-size:0.8rem;font-weight:600;color:var(--risk-low);margin-bottom:10px">✅ 2FA Enabled</div>
+            <% const enabled = accounts.filter ? [] : []; %>
+            <div style="font-size:0.85rem;color:var(--text-secondary)">Accounts with 2FA confirmed enabled show here. Enable 2FA on all sensitive accounts for maximum security.</div>
+          </div>
+          <div>
+            <div style="font-size:0.8rem;font-weight:600;color:var(--risk-moderate);margin-bottom:10px">⚠️ Unknown 2FA Status (<%= unknown2fa.length %>)</div>
+            <% unknown2fa.forEach(function(a) { %>
+              <div class="account-list-row risk-<%= a.riskLevel %>" style="margin-bottom:6px">
+                <div class="list-main"><div class="list-name"><%= a.name %></div><div class="list-sub"><%= a.category %></div></div>
+                <a href="https://<%= a.domain %>" target="_blank" class="btn btn-ghost btn-sm">Enable 2FA →</a>
+              </div>
+            <% }) %>
+          </div>
+        </div>
+
+      <% } else if (tab === 'inactive') { %>
+        <div class="accounts-list">
+          <% inactiveAccounts.forEach(function(account) { %>
+            <% const logos = {spotify:'🎵',netflix:'🎬',soundcloud:'🔊',quora:'❓',tumblr:'📝',pinterest:'📌',zara:'🧥',etsy:'🎨',trello:'📋',digitalocean:'🌊',npm:'📦',xbox:'🟢',airbnb:'🏠',booking:'🏨',khanacademy:'🦊',dropbox:'📦',lastfm:'🎵',adobe:'🅰️',coinbase:'₿',epicgames:'🕹️'}; %>
+            <div class="account-list-row risk-<%= account.riskLevel %>">
+              <div class="list-logo"><%= logos[account.logo] || account.name.charAt(0) %></div>
+              <div class="list-main">
+                <div class="list-name"><%= account.name %></div>
+                <div class="list-sub"><%= account.category %> · Last active: <%= account.lastActive %></div>
+              </div>
+              <span class="risk-badge <%= account.riskLevel %>"><span class="dot"></span><%= account.riskLevel.toUpperCase() %></span>
+              <div class="list-actions">
+                <a href="https://<%= account.domain %>" target="_blank" class="btn btn-ghost btn-sm">🌐 Open</a>
+                <a href="/cleanup" class="btn btn-danger btn-sm">🧹 Cleanup</a>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      <% } %>
+
+    </div>
+  </div>
+</div>
+<div id="toast-container" class="toast-container"></div>
+<script src="/js/app.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', initScoreGauge);
+</script>
+</body>
+</html>

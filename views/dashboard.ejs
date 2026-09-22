@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — My_Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <%- include('partials/sidebar', { user, notifications, page }) %>
+  <div class="main-content">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-title">Dashboard</div>
+      <form class="topbar-search" action="/dashboard" method="GET" id="search-form">
+        <span class="search-icon">🔍</span>
+        <input
+          type="text"
+          id="account-search"
+          name="search"
+          placeholder="Search accounts, services..."
+          value="<%= search %>"
+          autocomplete="off"
+        >
+        <% if (activeCategory !== 'all') { %><input type="hidden" name="category" value="<%= activeCategory %>"><% } %>
+        <% if (riskFilter) { %><input type="hidden" name="risk" value="<%= riskFilter %>"><% } %>
+      </form>
+      <div class="topbar-actions">
+        <a href="/notifications" class="icon-btn" title="Notifications">
+          🔔
+          <% if (notifications > 0) { %><span class="notif-dot"></span><% } %>
+        </a>
+        <a href="/settings" class="icon-btn" title="Settings">⚙️</a>
+        <a href="/login" class="icon-btn" title="Logout">🚪</a>
+      </div>
+    </header>
+
+    <div class="page-body">
+      <!-- Metric Cards -->
+      <div class="metrics-row">
+        <a href="/dashboard" class="metric-card total" style="text-decoration:none">
+          <div class="metric-icon">📦</div>
+          <div class="metric-value"><%= stats.total %></div>
+          <div class="metric-label">Total Accounts</div>
+        </a>
+        <a href="/breaches" class="metric-card breached" style="text-decoration:none">
+          <div class="metric-icon">🔴</div>
+          <div class="metric-value"><%= stats.breached %></div>
+          <div class="metric-label">Active Breaches</div>
+        </a>
+        <a href="/dashboard?risk=high" class="metric-card highrisk" style="text-decoration:none">
+          <div class="metric-icon">🟠</div>
+          <div class="metric-value"><%= stats.highRisk %></div>
+          <div class="metric-label">High / Critical Risk</div>
+        </a>
+        <a href="/cleanup" class="metric-card inactive" style="text-decoration:none">
+          <div class="metric-icon">💤</div>
+          <div class="metric-value"><%= stats.inactive %></div>
+          <div class="metric-label">Inactive Accounts</div>
+        </a>
+      </div>
+
+      <!-- Category Filter Tabs -->
+      <div class="category-tabs">
+        <a href="/dashboard" class="cat-tab <%= activeCategory === 'all' ? 'active' : '' %>">
+          All (<%= stats.total %>)
+        </a>
+        <% categories.forEach(function(cat) { %>
+          <% const count = accounts.filter ? '' : '' %>
+          <a href="/dashboard?category=<%= cat.toLowerCase() %>"
+             class="cat-tab <%= activeCategory === cat.toLowerCase() ? 'active' : '' %>">
+            <%= cat %>
+          </a>
+        <% }) %>
+      </div>
+
+      <!-- Sort + View Toolbar -->
+      <div class="toolbar">
+        <select class="sort-select" id="sort-select">
+          <option value="lastActive" <%= sort === 'lastActive' ? 'selected' : '' %>>Recently Active</option>
+          <option value="riskScore" <%= sort === 'riskScore' ? 'selected' : '' %>>Risk Score</option>
+          <option value="name" <%= sort === 'name' ? 'selected' : '' %>>Name A–Z</option>
+          <option value="firstSeen" <%= sort === 'firstSeen' ? 'selected' : '' %>>First Discovered</option>
+        </select>
+        <% if (riskFilter) { %>
+          <a href="/dashboard" class="btn btn-ghost btn-sm">✕ Clear Risk Filter</a>
+        <% } %>
+        <div class="toolbar-right">
+          <span style="font-size:0.8rem;color:var(--text-muted)">
+            <%= accounts.length %> account<%= accounts.length !== 1 ? 's' : '' %>
+          </span>
+          <div class="view-toggle">
+            <button class="view-btn active" id="view-grid" title="Grid View">⊞</button>
+            <button class="view-btn" id="view-list" title="List View">≡</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- GRID VIEW -->
+      <div id="accounts-grid-view">
+        <% if (accounts.length === 0) { %>
+          <div class="empty-state">
+            <div class="empty-icon">🔍</div>
+            <div class="empty-title">No accounts found</div>
+            <div class="empty-desc">Try adjusting your search or filter</div>
+          </div>
+        <% } else { %>
+          <div class="accounts-grid">
+            <% accounts.forEach(function(account) { %>
+              <div class="account-card risk-<%= account.riskLevel %> <%= account.isBreached ? 'breached' : '' %>"
+                   data-name="<%= account.name.toLowerCase() %>"
+                   data-domain="<%= account.domain.toLowerCase() %>"
+                   onclick="openAccountDetail('<%= account.id %>')"
+                   style="cursor:pointer">
+                <div class="account-card-header">
+                  <div class="service-logo">
+                    <% const logos = {spotify:'🎵',netflix:'🎬',youtube:'▶️',twitch:'🟣',disney:'✨',soundcloud:'🔊',twitter:'🐦',instagram:'📸',linkedin:'💼',reddit:'🤘',discord:'🎮',quora:'❓',pinterest:'📌',tumblr:'📝',amazon:'📦',flipkart:'🛒',myntra:'👗',zara:'🧥',nike:'👟',etsy:'🎨',ajio:'🛍️',paypal:'💰',razorpay:'💳',wise:'🌍',coinbase:'₿',groww:'📈',zerodha:'📊',github:'🐱',vercel:'▲',railway:'🚂',digitalocean:'🌊',npm:'📦',notion:'📓',slack:'💬',figma:'🎯',trello:'📋',zoom:'🎥',loom:'🎞️',linear:'⚡','1password':'🔑',steam:'🎮',epicgames:'🕹️',xbox:'🟢',makemytrip:'✈️',airbnb:'🏠',booking:'🏨',coursera:'📚',udemy:'🎓',khanacademy:'🦊',apollo:'💊',dropbox:'📦',lastfm:'🎵',adobe:'🅰️'}; %>
+                    <%= logos[account.logo] || account.name.charAt(0) %>
+                  </div>
+                  <div class="account-card-meta">
+                    <div class="account-name"><%= account.name %></div>
+                    <div class="account-category"><%= account.category %></div>
+                  </div>
+                  <div class="card-risk">
+                    <span class="risk-badge <%= account.riskLevel %>">
+                      <span class="dot"></span>
+                      <%= account.riskLevel.toUpperCase() %>
+                    </span>
+                  </div>
+                </div>
+                <div class="account-card-info">
+                  <div class="info-row">
+                    <span class="info-icon">📧</span>
+                    <span><%= account.email %></span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-icon">📅</span>
+                    <span>First seen <%= account.firstSeen %></span>
+                  </div>
+                  <div class="info-row">
+                    <span class="info-icon">⏱️</span>
+                    <span>Active <%= account.lastActive %></span>
+                  </div>
+                  <% if (account.isBreached) { %>
+                  <div class="info-row" style="color:var(--risk-critical)">
+                    <span class="info-icon">🚨</span>
+                    <span style="font-weight:600">Breach detected</span>
+                  </div>
+                  <% } %>
+                </div>
+                <div class="account-card-actions" onclick="event.stopPropagation()">
+                  <a href="https://<%= account.domain %>" target="_blank" class="action-btn primary">🌐 Open</a>
+                  <button class="action-btn" onclick="showToast('Settings for <%= account.name %> coming soon','info')">⚙️</button>
+                  <% if (account.isBreached) { %>
+                    <a href="/breaches" class="action-btn danger">🚨 Breach</a>
+                  <% } else { %>
+                    <a href="/security" class="action-btn">🔒</a>
+                  <% } %>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- LIST VIEW -->
+      <div id="accounts-list-view" style="display:none">
+        <div class="accounts-list">
+          <% accounts.forEach(function(account) { %>
+            <% const logos = {spotify:'🎵',netflix:'🎬',youtube:'▶️',twitch:'🟣',disney:'✨',soundcloud:'🔊',twitter:'🐦',instagram:'📸',linkedin:'💼',reddit:'🤘',discord:'🎮',quora:'❓',pinterest:'📌',tumblr:'📝',amazon:'📦',flipkart:'🛒',myntra:'👗',zara:'🧥',nike:'👟',etsy:'🎨',ajio:'🛍️',paypal:'💰',razorpay:'💳',wise:'🌍',coinbase:'₿',groww:'📈',zerodha:'📊',github:'🐱',vercel:'▲',railway:'🚂',digitalocean:'🌊',npm:'📦',notion:'📓',slack:'💬',figma:'🎯',trello:'📋',zoom:'🎥',loom:'🎞️',linear:'⚡','1password':'🔑',steam:'🎮',epicgames:'🕹️',xbox:'🟢',makemytrip:'✈️',airbnb:'🏠',booking:'🏨',coursera:'📚',udemy:'🎓',khanacademy:'🦊',apollo:'💊',dropbox:'📦',lastfm:'🎵',adobe:'🅰️'}; %>
+            <div class="account-list-row risk-<%= account.riskLevel %>"
+                 data-name="<%= account.name.toLowerCase() %>"
+                 data-domain="<%= account.domain.toLowerCase() %>"
+                 onclick="openAccountDetail('<%= account.id %>')">
+              <div class="list-logo"><%= logos[account.logo] || account.name.charAt(0) %></div>
+              <div class="list-main">
+                <div class="list-name">
+                  <%= account.name %>
+                  <% if (account.isBreached) { %><span style="color:var(--risk-critical);font-size:0.7rem;margin-left:6px">🚨 BREACHED</span><% } %>
+                </div>
+                <div class="list-sub"><%= account.category %> · <%= account.domain %></div>
+              </div>
+              <div class="list-email"><%= account.email %></div>
+              <div class="list-activity" style="color:<%= account.activityStatus === 'inactive' ? 'var(--risk-moderate)' : 'var(--text-muted)' %>">
+                <%= account.activityStatus === 'inactive' ? '💤 ' : '✅ ' %><%= account.lastActive %>
+              </div>
+              <span class="risk-badge <%= account.riskLevel %>">
+                <span class="dot"></span>
+                <%= account.riskLevel.toUpperCase() %>
+              </span>
+              <div class="list-actions" onclick="event.stopPropagation()">
+                <a href="https://<%= account.domain %>" target="_blank" class="action-btn primary btn-sm">🌐</a>
+                <button class="action-btn btn-sm" onclick="showToast('Options for <%= account.name %>','info')">⚙️</button>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Account Detail Side Panel -->
+<div id="account-panel-overlay"
+     style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;backdrop-filter:blur(4px)"
+     onclick="closeAccountDetail()"></div>
+<div id="account-panel"
+     style="display:none;position:fixed;top:0;right:0;bottom:0;width:420px;background:var(--bg-surface);border-left:1px solid var(--border);z-index:201;overflow-y:auto;transform:translateX(100%);transition:transform 0.25s cubic-bezier(0.4,0,0.2,1)">
+  <div style="padding:20px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+      <span style="font-size:0.8rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em">Account Detail</span>
+      <button onclick="closeAccountDetail()" style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);cursor:pointer;font-size:1rem">✕</button>
+    </div>
+    <div id="account-panel-content">
+      <div style="text-align:center;padding:40px;color:var(--text-muted)">Loading...</div>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" class="toast-container"></div>
+<script src="/js/app.js"></script>
+<script>
+const accountData = <%- JSON.stringify(accounts) %>;
+
+function openAccountDetail(id) {
+  const account = accountData.find(a => a.id === id);
+  if (!account) return;
+
+  const logos = {spotify:'🎵',netflix:'🎬',youtube:'▶️',twitch:'🟣',disney:'✨',soundcloud:'🔊',twitter:'🐦',instagram:'📸',linkedin:'💼',reddit:'🤘',discord:'🎮',quora:'❓',pinterest:'📌',tumblr:'📝',amazon:'📦',flipkart:'🛒',myntra:'👗',zara:'🧥',nike:'👟',etsy:'🎨',ajio:'🛍️',paypal:'💰',razorpay:'💳',wise:'🌍',coinbase:'₿',groww:'📈',zerodha:'📊',github:'🐱',vercel:'▲',railway:'🚂',digitalocean:'🌊',npm:'📦',notion:'📓',slack:'💬',figma:'🎯',trello:'📋',zoom:'🎥',loom:'🎞️',linear:'⚡','1password':'🔑',steam:'🎮',epicgames:'🕹️',xbox:'🟢',makemytrip:'✈️',airbnb:'🏠',booking:'🏨',coursera:'📚',udemy:'🎓',khanacademy:'🦊',apollo:'💊',dropbox:'📦',lastfm:'🎵',adobe:'🅰️'};
+  const logo = logos[account.logo] || account.name.charAt(0);
+
+  const riskColors = { low:'#22c55e', moderate:'#f59e0b', high:'#f97316', critical:'#ef4444' };
+  const riskColor = riskColors[account.riskLevel] || '#94a3b8';
+  const twoFaLabels = { enabled:'✅ Enabled', unknown:'⚠️ Unknown', unsupported:'➖ Not supported' };
+  const barW = account.riskScore;
+
+  document.getElementById('account-panel-content').innerHTML = `
+    <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:16px;display:flex;align-items:center;gap:14px">
+      <div style="width:52px;height:52px;border-radius:12px;background:var(--bg-card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0">${logo}</div>
+      <div>
+        <div style="font-size:1.1rem;font-weight:700;color:var(--text-primary)">${account.name}${account.isBreached ? ' <span style="color:var(--risk-critical);font-size:0.7rem">🚨 BREACHED</span>' : ''}</div>
+        <div style="font-size:0.8rem;color:var(--text-muted)">${account.category} · ${account.domain}</div>
+        <div style="font-size:0.78rem;color:var(--text-secondary);margin-top:2px">via ${account.email}</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px">
+        <div style="font-size:0.7rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;margin-bottom:8px">Risk Score</div>
+        <div style="font-size:1.5rem;font-weight:800;color:${riskColor};margin-bottom:6px">${account.riskScore}/100</div>
+        <div style="background:var(--bg-elevated);border-radius:99px;height:5px;overflow:hidden">
+          <div style="height:100%;width:${barW}%;background:${riskColor};border-radius:99px"></div>
+        </div>
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:4px;text-transform:uppercase;letter-spacing:0.05em">${account.riskLevel}</div>
+      </div>
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px">
+        <div style="font-size:0.7rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;margin-bottom:8px">Breach Status</div>
+        <div style="font-size:1rem;font-weight:700;color:${account.isBreached ? 'var(--risk-critical)' : 'var(--risk-low)'}">
+          ${account.isBreached ? '🚨 Breached' : '✅ Clean'}
+        </div>
+        <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">${account.isBreached ? 'Action needed' : 'No breach found'}</div>
+      </div>
+    </div>
+
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:16px">
+      <div style="font-size:0.7rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;margin-bottom:10px">Account Details</div>
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <div style="display:flex;justify-content:space-between;font-size:0.8rem">
+          <span style="color:var(--text-muted)">First seen</span>
+          <span style="color:var(--text-primary)">${account.firstSeen}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.8rem">
+          <span style="color:var(--text-muted)">Last active</span>
+          <span style="color:var(--text-primary)">${account.lastActive}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.8rem">
+          <span style="color:var(--text-muted)">Status</span>
+          <span style="color:${account.activityStatus === 'inactive' ? 'var(--risk-moderate)' : 'var(--risk-low)'}">${account.activityStatus === 'inactive' ? '💤 Inactive' : '✅ Active'}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.8rem">
+          <span style="color:var(--text-muted)">2FA Status</span>
+          <span style="color:var(--text-primary)">${twoFaLabels[account.twoFaStatus] || account.twoFaStatus}</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px">
+      <div style="font-size:0.7rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;margin-bottom:10px">Activity Timeline</div>
+      <div style="display:flex;flex-direction:column;gap:1px">
+        <div style="display:flex;align-items:center;gap:10px;padding:8px;border-left:2px solid var(--accent);padding-left:14px;position:relative">
+          <div style="position:absolute;left:-5px;width:8px;height:8px;background:var(--accent);border-radius:50%"></div>
+          <div><div style="font-size:0.8rem;font-weight:600;color:var(--text-primary)">🔵 Account Created</div><div style="font-size:0.75rem;color:var(--text-muted)">${account.firstSeen}</div></div>
+        </div>
+        ${account.isBreached ? `<div style="display:flex;align-items:center;gap:10px;padding:8px;border-left:2px solid var(--risk-critical);padding-left:14px;position:relative"><div style="position:absolute;left:-5px;width:8px;height:8px;background:var(--risk-critical);border-radius:50%"></div><div><div style="font-size:0.8rem;font-weight:600;color:var(--risk-critical)">🚨 Breach Detected</div><div style="font-size:0.75rem;color:var(--text-muted)">Check breach monitor for details</div></div></div>` : ''}
+        <div style="display:flex;align-items:center;gap:10px;padding:8px;border-left:2px solid var(--border);padding-left:14px;position:relative">
+          <div style="position:absolute;left:-5px;width:8px;height:8px;background:var(--text-muted);border-radius:50%"></div>
+          <div><div style="font-size:0.8rem;font-weight:500;color:var(--text-secondary)">⏱️ Last Activity</div><div style="font-size:0.75rem;color:var(--text-muted)">${account.lastActive}</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="font-size:0.7rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;margin-bottom:10px">Quick Actions</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <a href="https://${account.domain}" target="_blank" class="btn btn-primary" style="justify-content:center">🌐 Open ${account.name}</a>
+      <button class="btn btn-ghost" onclick="showToast('Account settings coming in backend phase','info')">⚙️ Account Settings</button>
+      <a href="/security" class="btn btn-ghost">🔒 Security & 2FA</a>
+      ${account.activityStatus === 'inactive' ? `<a href="/cleanup" class="btn btn-danger">🧹 Cleanup / Delete Account</a>` : ''}
+    </div>
+  `;
+
+  const overlay = document.getElementById('account-panel-overlay');
+  const panel = document.getElementById('account-panel');
+  overlay.style.display = 'block';
+  panel.style.display = 'block';
+  requestAnimationFrame(() => { panel.style.transform = 'translateX(0)'; });
+}
+
+function closeAccountDetail() {
+  const panel = document.getElementById('account-panel');
+  const overlay = document.getElementById('account-panel-overlay');
+  panel.style.transform = 'translateX(100%)';
+  setTimeout(() => {
+    panel.style.display = 'none';
+    overlay.style.display = 'none';
+  }, 250);
+}
+
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAccountDetail(); });
+</script>
+</body>
+</html>

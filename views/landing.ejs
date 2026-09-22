@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="My_Login — Know every account linked to your email. Discover, monitor, and clean up your digital footprint.">
+  <title>My_Login — Digital Identity Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="landing-page">
+
+  <!-- Navbar -->
+  <nav class="landing-nav">
+    <div class="flex gap-12" style="align-items:center">
+      <div class="logo-mark">M</div>
+      <span style="font-size:1rem;font-weight:700;color:var(--text-primary)">My<span style="color:var(--accent-light)">_Login</span></span>
+    </div>
+    <div class="landing-nav-links">
+      <a href="#features">Features</a>
+      <a href="#privacy">Privacy</a>
+      <a href="#security">Security</a>
+      <a href="https://github.com/shivamkumar0174" target="_blank">GitHub</a>
+    </div>
+    <div class="landing-nav-actions">
+      <a href="/login" class="btn btn-ghost btn-sm">Sign In</a>
+      <a href="/register" class="btn btn-primary btn-sm">Get Started Free</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-badge">
+      <span>🔐</span> Privacy-First Identity Hub
+    </div>
+    <h1>Know Every Account<br>Linked to Your Email</h1>
+    <p>My_Login scans your inbox metadata to discover every service you've signed up for — then monitors breaches, scores your risk, and helps you clean up your digital footprint.</p>
+    <div class="hero-actions">
+      <a href="/onboarding" class="btn btn-primary btn-lg">
+        🚀 Connect Gmail & Scan Free
+      </a>
+      <a href="/dashboard" class="btn btn-ghost btn-lg">
+        📊 View Demo Dashboard
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><strong>71</strong> avg. accounts found</div>
+      <div class="hero-stat-divider">·</div>
+      <div class="hero-stat"><strong>3 in 5</strong> users have active breaches</div>
+      <div class="hero-stat-divider">·</div>
+      <div class="hero-stat"><strong>100%</strong> privacy — we never read email body</div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features-section" id="features">
+    <div class="section-label">What We Do</div>
+    <h2 class="section-title">Your complete digital identity, in one place</h2>
+    <p class="section-subtitle">We scan Gmail metadata — never the body of your emails — to build a complete picture of your online accounts.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-card-icon">🔍</div>
+        <h3>Account Discovery</h3>
+        <p>Automatically finds every service linked to your Gmail by scanning sender metadata and subject patterns. No email body is ever read or stored.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card-icon">🚨</div>
+        <h3>Breach Monitoring</h3>
+        <p>Checks your emails against the HaveIBeenPwned breach database weekly. Get alerted the moment your data appears in a new breach.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card-icon">📊</div>
+        <h3>Risk Scoring</h3>
+        <p>Every account gets a transparent, deterministic risk score based on breach status, inactivity, 2FA, and account age. No black boxes.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card-icon">🛡️</div>
+        <h3>Security Center</h3>
+        <p>An aggregate security score 0–100 with a prioritized action list. Know exactly what to fix and in what order.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card-icon">🧹</div>
+        <h3>Account Cleanup</h3>
+        <p>Guided flow to official deletion pages for every inactive or risky account you find. Clean up your footprint with confidence.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-card-icon">📧</div>
+        <h3>Multi-Email Support</h3>
+        <p>Connect multiple Gmail accounts to get a complete picture across all your email identities — personal, work, old accounts.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Privacy Promise -->
+  <section id="privacy" style="padding: 60px 60px;">
+    <div class="privacy-banner">
+      <div class="privacy-banner-content" style="flex:1">
+        <div class="privacy-badge">✅ Privacy-First by Design</div>
+        <h2>We read metadata,<br>never your emails</h2>
+        <p>We only access what we need. Google's <code>gmail.readonly</code> scope lets us read metadata — sender, subject line, date — and nothing else.</p>
+        <div class="privacy-points">
+          <div class="privacy-point"><span class="privacy-check">✓</span> We read: sender address, subject line, timestamp</div>
+          <div class="privacy-point"><span class="privacy-check">✓</span> We store: which services sent you emails</div>
+          <div class="privacy-point"><span class="privacy-check">✓</span> Zero password storage — ever</div>
+          <div class="privacy-point" style="color:var(--risk-critical)"><span class="privacy-check" style="color:var(--risk-critical)">✕</span> We never read email body content</div>
+          <div class="privacy-point" style="color:var(--risk-critical)"><span class="privacy-check" style="color:var(--risk-critical)">✕</span> We never log in to services on your behalf</div>
+        </div>
+      </div>
+      <div style="flex-shrink:0;text-align:center">
+        <div style="font-size:5rem;margin-bottom:12px">🔒</div>
+        <div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);border-radius:12px;padding:16px 20px;text-align:center;">
+          <div style="font-size:1.8rem;font-weight:800;color:var(--risk-low)">0</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)">Email bodies stored</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section" id="security">
+    <div class="cta-box">
+      <div style="font-size:3rem;margin-bottom:16px">🔐</div>
+      <h2>Ready to audit your digital life?</h2>
+      <p>Scan your Gmail for free. No credit card required. Get your security score in under 2 minutes.</p>
+      <a href="/onboarding" class="btn btn-primary btn-lg">
+        Start Your Free Scan →
+      </a>
+      <div style="margin-top:20px;font-size:0.8rem;color:var(--text-muted)">
+        Already have an account? <a href="/login" style="color:var(--accent-light)">Sign in</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="landing-footer">
+    <div class="flex gap-12" style="align-items:center">
+      <div class="logo-mark" style="width:28px;height:28px;font-size:14px">M</div>
+      <span style="color:var(--text-muted)">My_Login by Shivam ❤️ © 2026</span>
+    </div>
+    <div class="footer-links">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Security</a>
+      <a href="#">Contact</a>
+    </div>
+  </footer>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

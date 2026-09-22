@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Accounts — My_Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <%- include('partials/sidebar', { user, notifications, page }) %>
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-title">Email Accounts</div>
+      <div class="topbar-actions">
+        <a href="/notifications" class="icon-btn">🔔<% if(notifications>0){%><span class="notif-dot"></span><%}%></a>
+        <a href="/settings" class="icon-btn">⚙️</a>
+      </div>
+    </header>
+    <div class="page-body">
+      <div class="flex-between mb-24">
+        <div>
+          <h1 style="font-size:1.5rem;margin-bottom:4px">Email Accounts</h1>
+          <p class="page-subtitle">Manage your connected email identities. Each email is scanned separately for linked accounts.</p>
+        </div>
+        <button class="btn btn-primary" onclick="showToast('Add email — coming in backend phase','info')">
+          + Add Email Account
+        </button>
+      </div>
+
+      <% emails.forEach(function(emailAcc) { %>
+        <div class="email-card">
+          <div class="email-provider-logo">
+            <%= emailAcc.provider === 'Gmail' ? '📬' : '📧' %>
+          </div>
+          <div class="email-info">
+            <div class="email-address"><%= emailAcc.email %></div>
+            <div class="email-meta">
+              <strong style="color:var(--text-primary)"><%= emailAcc.provider %></strong>
+              <% if (emailAcc.connected) { %>
+                · Last scan: <%= emailAcc.lastScan %> · <strong style="color:var(--text-primary)"><%= emailAcc.accountsFound %></strong> accounts found
+              <% } else { %>
+                · Not connected
+              <% } %>
+            </div>
+          </div>
+          <% if (emailAcc.connected) { %>
+            <span class="connect-badge connected">● Connected</span>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-ghost btn-sm" onclick="showToast('Scan started for <%= emailAcc.email %>','success')">🔄 Re-scan</button>
+              <button class="btn btn-danger btn-sm" onclick="showToast('Disconnected <%= emailAcc.email %>','info')">Disconnect</button>
+            </div>
+          <% } else { %>
+            <span class="connect-badge disconnected">○ Not Connected</span>
+            <a href="/onboarding" class="btn btn-primary btn-sm">🔗 Connect Gmail</a>
+          <% } %>
+        </div>
+      <% }) %>
+
+      <!-- Info box -->
+      <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-top:8px">
+        <div style="font-size:0.8rem;font-weight:600;color:var(--text-secondary);margin-bottom:8px">📋 About Gmail Connection</div>
+        <div style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6">
+          We request <code style="background:var(--bg-card);padding:2px 6px;border-radius:4px;font-size:0.78rem">gmail.readonly</code> scope to scan email <strong>metadata only</strong> — sender addresses, subjects, and timestamps. We never read the body of your emails, and you can revoke access anytime from your Google Account security settings.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="toast-container" class="toast-container"></div>
+<script src="/js/app.js"></script>
+</body>
+</html>

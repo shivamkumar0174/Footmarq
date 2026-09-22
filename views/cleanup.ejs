@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cleanup Center — My_Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <%- include('partials/sidebar', { user, notifications, page }) %>
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-title">Cleanup Center</div>
+      <div class="topbar-actions">
+        <a href="/notifications" class="icon-btn">🔔<% if(notifications>0){%><span class="notif-dot"></span><%}%></a>
+        <a href="/settings" class="icon-btn">⚙️</a>
+      </div>
+    </header>
+    <div class="page-body">
+      <div class="page-header">
+        <h1>Cleanup Center</h1>
+        <p class="page-subtitle"><%= accounts.length %> inactive accounts found. Clean up services you no longer use to reduce your attack surface.</p>
+      </div>
+
+      <!-- Banner -->
+      <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:var(--radius);padding:16px 20px;display:flex;align-items:center;gap:14px;margin-bottom:24px">
+        <span style="font-size:1.4rem">💡</span>
+        <div>
+          <div style="font-size:0.9rem;font-weight:600;color:var(--risk-moderate)">Why cleanup matters</div>
+          <div style="font-size:0.82rem;color:var(--text-secondary)">Dormant accounts you don't use are still breach targets. Deleting them reduces your digital footprint and exposure.</div>
+        </div>
+      </div>
+
+      <!-- Category legend -->
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px">
+        <% const cats = [...new Set(accounts.map(a => a.category))]; %>
+        <% cats.forEach(function(cat) { %>
+          <span style="background:var(--bg-elevated);border:1px solid var(--border);padding:4px 12px;border-radius:99px;font-size:0.78rem;color:var(--text-secondary)">
+            <%= cat %> (<%= accounts.filter(a=>a.category===cat).length %>)
+          </span>
+        <% }) %>
+      </div>
+
+      <!-- Accounts List -->
+      <div class="accounts-list">
+        <% accounts.forEach(function(account) { %>
+          <% const logos = {spotify:'🎵',netflix:'🎬',soundcloud:'🔊',quora:'❓',tumblr:'📝',pinterest:'📌',zara:'🧥',etsy:'🎨',trello:'📋',digitalocean:'🌊',npm:'📦',xbox:'🟢',airbnb:'🏠',booking:'🏨',khanacademy:'🦊',dropbox:'📦',lastfm:'🎵',adobe:'🅰️',coinbase:'₿',epicgames:'🕹️',instagram:'📸'}; %>
+          <div class="account-list-row risk-<%= account.riskLevel %>" style="gap:14px">
+            <div class="list-logo"><%= logos[account.logo] || account.name.charAt(0) %></div>
+            <div class="list-main" style="flex:1">
+              <div class="list-name">
+                <%= account.name %>
+                <% if (account.isBreached) { %><span style="color:var(--risk-critical);font-size:0.7rem;margin-left:6px">🚨 BREACHED</span><% } %>
+              </div>
+              <div class="list-sub"><%= account.category %> · <%= account.email %></div>
+            </div>
+            <div style="font-size:0.78rem;color:var(--risk-moderate);min-width:120px">
+              💤 Last: <%= account.lastActive %>
+            </div>
+            <span class="risk-badge <%= account.riskLevel %>"><span class="dot"></span><%= account.riskLevel.toUpperCase() %></span>
+            <div style="display:flex;gap:8px">
+              <a href="https://<%= account.domain %>" target="_blank" class="btn btn-ghost btn-sm">🌐 Open Site</a>
+              <button class="btn btn-ghost btn-sm" onclick="showToast('Marked as deleted for tracking','success')">✓ Mark Deleted</button>
+              <button class="btn btn-ghost btn-sm" onclick="showToast('Account archived','info')">📁 Archive</button>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+
+      <% if (accounts.length === 0) { %>
+        <div class="empty-state">
+          <div class="empty-icon">✅</div>
+          <div class="empty-title">All clean!</div>
+          <div class="empty-desc">No inactive accounts found. Great job maintaining your digital hygiene.</div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+<div id="toast-container" class="toast-container"></div>
+<script src="/js/app.js"></script>
+</body>
+</html>

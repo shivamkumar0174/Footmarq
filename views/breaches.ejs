@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Breach Monitor — My_Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <%- include('partials/sidebar', { user, notifications, page }) %>
+  <div class="main-content">
+    <header class="topbar">
+      <div class="topbar-title">Breach Monitor</div>
+      <div class="topbar-actions">
+        <a href="/notifications" class="icon-btn">🔔<% if(notifications>0){%><span class="notif-dot"></span><%}%></a>
+        <a href="/settings" class="icon-btn">⚙️</a>
+      </div>
+    </header>
+    <div class="page-body">
+      <div class="page-header">
+        <h1>Breach Monitor</h1>
+        <p class="page-subtitle">Your emails checked against the HaveIBeenPwned database. <%= breaches.length %> active breaches found.</p>
+      </div>
+
+      <!-- Stats -->
+      <div style="display:flex;gap:14px;margin-bottom:28px;flex-wrap:wrap">
+        <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:var(--radius);padding:18px 24px;min-width:140px;text-align:center">
+          <div style="font-size:2rem;font-weight:800;color:var(--risk-critical)"><%= breaches.length %></div>
+          <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">Active Breaches</div>
+        </div>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 24px;min-width:140px;text-align:center">
+          <div style="font-size:2rem;font-weight:800;color:var(--text-primary)"><%= accounts.filter(a=>a.isBreached).length %></div>
+          <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">Accounts Affected</div>
+        </div>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 24px;flex:1">
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:6px">Last breach check</div>
+          <div style="font-size:0.9rem;font-weight:600;color:var(--text-primary)">2 hours ago</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">Checked weekly against HIBP database · 14B+ records</div>
+        </div>
+      </div>
+
+      <!-- Breach Alert Banner -->
+      <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:var(--radius);padding:16px 20px;display:flex;align-items:center;gap:14px;margin-bottom:24px">
+        <span style="font-size:1.4rem">🚨</span>
+        <div>
+          <div style="font-size:0.9rem;font-weight:700;color:var(--risk-critical)">Action Required</div>
+          <div style="font-size:0.82rem;color:var(--text-secondary)">Change passwords on all breached accounts immediately. Use a unique password for each service. Enable 2FA where available.</div>
+        </div>
+      </div>
+
+      <!-- Breach List -->
+      <% breaches.forEach(function(breach) { %>
+        <div class="breach-card">
+          <div class="breach-header">
+            <div>
+              <div class="breach-service">🚨 <%= breach.service %></div>
+              <div class="breach-date">Breached <%= breach.breachDate %> · Detected <%= breach.detectedDate %></div>
+            </div>
+            <span class="risk-badge critical" style="align-self:flex-start"><span class="dot"></span><%= breach.severity.toUpperCase() %></span>
+          </div>
+          <div class="breach-email">📧 Exposed email: <strong style="color:var(--text-primary)"><%= breach.email %></strong></div>
+          <div class="breach-desc"><%= breach.description %></div>
+          <div class="data-types">
+            <% breach.dataTypes.forEach(function(dt) { %>
+              <span class="data-type-tag"><%= dt %></span>
+            <% }) %>
+          </div>
+          <div class="breach-meta">
+            <span>👥 <span class="breach-count"><%= breach.pwnCount %></span> records exposed</span>
+            <span>·</span>
+            <span style="color:var(--risk-critical);font-weight:600">● Unresolved</span>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+            <button class="btn btn-primary btn-sm" onclick="showToast('Open <%= breach.service %> to change your password','warning')">
+              🔑 Change Password
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="showToast('Marked as reviewed','success')">✓ Mark Reviewed</button>
+            <a href="/cleanup" class="btn btn-danger btn-sm">🗑️ Delete Account</a>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</div>
+<div id="toast-container" class="toast-container"></div>
+<script src="/js/app.js"></script>
+</body>
+</html>

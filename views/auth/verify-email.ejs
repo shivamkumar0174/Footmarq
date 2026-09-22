@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Email — My_Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--bg-base); position: relative; overflow: hidden; }
+    body::before { content: ''; position: absolute; top: -200px; left: -200px; width: 600px; height: 600px; background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%); }
+    body::after { content: ''; position: absolute; bottom: -200px; right: -200px; width: 500px; height: 500px; background: radial-gradient(circle, rgba(34,211,238,0.08) 0%, transparent 70%); }
+    .verify-card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 52px; max-width: 420px; width: 100%; text-align: center; position: relative; z-index: 1; }
+  </style>
+</head>
+<body>
+<div class="verify-card">
+  <div style="font-size:3rem;margin-bottom:16px">📬</div>
+  <h2 style="font-size:1.5rem;margin-bottom:8px">Check your email</h2>
+  <p style="color:var(--text-secondary);margin-bottom:28px;font-size:0.9rem">
+    We sent a 6-digit verification code to<br>
+    <strong style="color:var(--text-primary)"><%= typeof email !== 'undefined' ? email : 'your email' %></strong>
+  </p>
+
+  <form action="/onboarding" method="GET">
+    <div class="otp-container" style="margin-bottom:24px">
+      <input class="otp-input" type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" id="otp-1">
+      <input class="otp-input" type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" id="otp-2">
+      <input class="otp-input" type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" id="otp-3">
+      <input class="otp-input" type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" id="otp-4">
+      <input class="otp-input" type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" id="otp-5">
+      <input class="otp-input" type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" id="otp-6">
+    </div>
+    <button type="submit" class="btn btn-primary w-full" style="justify-content:center;margin-bottom:14px">
+      Verify Email →
+    </button>
+  </form>
+
+  <div style="font-size:0.82rem;color:var(--text-muted)">
+    Didn't receive it? <button onclick="showToast('Code resent!','success')" style="background:none;border:none;color:var(--accent-light);font-size:0.82rem;cursor:pointer;font-weight:600">Resend code</button>
+    <br><br>
+    <a href="/register" style="color:var(--text-muted)">← Back to register</a>
+  </div>
+</div>
+<div id="toast-container" class="toast-container"></div>
+<script src="/js/app.js"></script>
+</body>
+</html>

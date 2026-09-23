@@ -33,6 +33,12 @@
       <h2 class="auth-title">Create your account</h2>
       <p class="auth-subtitle">Free forever. No credit card required.</p>
 
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;padding:10px 14px;border-radius:8px;font-size:0.85rem;margin-bottom:16px;">
+          ⚠️ <%= error %>
+        </div>
+      <% } %>
+
       <button class="btn-google" onclick="showToast('Google signup coming soon!', 'info')">
         <svg class="google-logo" viewBox="0 0 24 24">
           <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -45,7 +51,7 @@
 
       <div class="divider-text" style="margin:18px 0">or register with email</div>
 
-      <form action="/verify-email" method="GET">
+      <form action="/register" method="POST">
         <div class="form-group">
           <label class="form-label" for="name">Full name</label>
           <input class="form-input" type="text" id="name" name="name" placeholder="Shivam Kumar" required>

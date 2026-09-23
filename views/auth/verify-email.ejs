@@ -18,10 +18,16 @@
 <div class="verify-card">
   <div style="font-size:3rem;margin-bottom:16px">📬</div>
   <h2 style="font-size:1.5rem;margin-bottom:8px">Check your email</h2>
-  <p style="color:var(--text-secondary);margin-bottom:28px;font-size:0.9rem">
+  <p style="color:var(--text-secondary);margin-bottom:18px;font-size:0.9rem">
     We sent a 6-digit verification code to<br>
     <strong style="color:var(--text-primary)"><%= typeof email !== 'undefined' ? email : 'your email' %></strong>
   </p>
+
+  <!-- Demo OTP Badge -->
+  <div style="background: rgba(99, 102, 241, 0.12); border: 1px dashed rgba(99, 102, 241, 0.4); border-radius: 10px; padding: 10px 14px; margin-bottom: 24px; font-size: 0.85rem; color: var(--accent-light); display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+    <span>🔑 Demo Code: <strong style="font-size:1.05rem; letter-spacing: 2px; color:var(--text-primary, #fff);">123456</strong></span>
+    <button type="button" onclick="autoFillOTP('123456')" style="background: var(--accent-primary, #6366f1); border: none; color: #fff; padding: 5px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Fill Code</button>
+  </div>
 
   <form action="/onboarding" method="GET">
     <div class="otp-container" style="margin-bottom:24px">
@@ -38,12 +44,24 @@
   </form>
 
   <div style="font-size:0.82rem;color:var(--text-muted)">
-    Didn't receive it? <button onclick="showToast('Code resent!','success')" style="background:none;border:none;color:var(--accent-light);font-size:0.82rem;cursor:pointer;font-weight:600">Resend code</button>
+    Didn't receive it? <button onclick="showToast('Verification code resent! (Demo OTP: 123456)','success')" style="background:none;border:none;color:var(--accent-light);font-size:0.82rem;cursor:pointer;font-weight:600">Resend code</button>
     <br><br>
     <a href="/register" style="color:var(--text-muted)">← Back to register</a>
   </div>
 </div>
 <div id="toast-container" class="toast-container"></div>
 <script src="/js/app.js"></script>
+<script>
+  function autoFillOTP(code) {
+    const inputs = document.querySelectorAll('.otp-input');
+    code.split('').forEach((digit, i) => {
+      if (inputs[i]) inputs[i].value = digit;
+    });
+    if (inputs[inputs.length - 1]) inputs[inputs.length - 1].focus();
+    if (typeof showToast === 'function') {
+      showToast('OTP auto-filled! Click Verify Email to proceed.', 'success');
+    }
+  }
+</script>
 </body>
 </html>

@@ -54,6 +54,11 @@
           ⚠️ <%= error %>
         </div>
       <% } %>
+      <% if (typeof success !== 'undefined' && success) { %>
+        <div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#86efac;padding:10px 14px;border-radius:8px;font-size:0.85rem;margin-bottom:16px;">
+          ✅ <%= success %>
+        </div>
+      <% } %>
 
       <button class="btn-google" onclick="showToast('Google OAuth coming soon — use email/password for now', 'info')">
         <svg class="google-logo" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -67,10 +72,10 @@
 
       <div class="divider-text" style="margin:18px 0">or continue with email</div>
 
-      <form action="/dashboard" method="GET">
+      <form action="/login" method="POST">
         <div class="form-group">
           <label class="form-label" for="email">Email address</label>
-          <input class="form-input" type="email" id="email" name="email" placeholder="kumarshivam51238@gmail.com" required>
+          <input class="form-input" type="email" id="email" name="email" value="<%= typeof email !== 'undefined' ? email : '' %>" placeholder="kumarshivam51238@gmail.com" required>
         </div>
         <div class="form-group">
           <label class="form-label" for="password">

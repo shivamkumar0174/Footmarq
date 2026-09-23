@@ -28,13 +28,28 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Helper to fetch primary default user or first user
-async function getCurrentUser() {
-  let user = await User.findOne({ email: 'kumarshivam51238@gmail.com' });
-  if (!user) {
-    user = await User.findOne({});
+// Native cookie parser
+app.use((req, res, next) => {
+  req.cookies = {};
+  const cookieHeader = req.headers.cookie;
+  if (cookieHeader) {
+    cookieHeader.split(';').forEach(cookie => {
+      const parts = cookie.split('=');
+      if (parts.length >= 2) {
+        req.cookies[parts[0].trim()] = decodeURIComponent(parts.slice(1).join('=').trim());
+      }
+    });
   }
-  return user;
+  next();
+});
+
+// Helper to fetch logged in user from cookie
+async function getCurrentUser(req) {
+  if (!req || !req.cookies || !req.cookies.userEmail) {
+    return null;
+  }
+  const user = await User.findOne({ email: req.cookies.userEmail.toLowerCase().trim() });
+  return user || null;
 }
 
 function getDashboardStats(accounts) {
@@ -49,26 +64,35 @@ function getDashboardStats(accounts) {
 // ── Routes ───────────────────────────────────────────────────
 
 // Landing
-app.get('/', (req, res) => {
-  res.render('landing', { user: null, page: 'landing' });
+app.get('/', async (req, res) => {
+  const user = await getCurrentUser(req);
+  res.render('landing', { user, page: 'landing' });
 });
 
 // Auth GET
 app.get('/login', (req, res) => {
-  res.render('auth/login', { page: 'login', error: null });
+  const success = req.query.registered === 'true' ? 'Account created successfully! Please sign in.' : null;
+  const email = req.query.email || '';
+  res.render('auth/login', { page: 'login', error: null, success, email });
 });
 
 app.post('/login', async (req, res) => {
   try {
     const { email } = req.body;
-    const user = await User.findOne({ email: email ? email.toLowerCase() : '' });
+    const user = await User.findOne({ email: email ? email.toLowerCase().trim() : '' });
     if (user) {
+      res.cookie('userEmail', user.email);
       return res.redirect('/dashboard');
     }
-    res.render('auth/login', { page: 'login', error: 'User not found in database. Register first or use valid email.' });
+    res.render('auth/login', { page: 'login', error: 'User not found in database. Register first or use valid email.', success: null, email: email || '' });
   } catch (err) {
-    res.render('auth/login', { page: 'login', error: err.message });
+    res.render('auth/login', { page: 'login', error: err.message, success: null, email: '' });
   }
+});
+
+app.get('/logout', (req, res) => {
+  res.clearCookie('userEmail');
+  res.redirect('/');
 });
 
 app.get('/register', (req, res) => {
@@ -78,14 +102,15 @@ app.get('/register', (req, res) => {
 app.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
-    const existing = await User.findOne({ email: email.toLowerCase() });
+    const userEmail = email ? email.toLowerCase().trim() : '';
+    const existing = await User.findOne({ email: userEmail });
     if (existing) {
-      return res.render('auth/register', { page: 'register', error: 'Email already exists.' });
+      return res.render('auth/register', { page: 'register', error: 'Email already exists. Please log in.' });
     }
     const initials = name ? name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U';
     const newUser = await User.create({
       name,
-      email: email.toLowerCase(),
+      email: userEmail,
       password: password || 'defaultPass123',
       avatar: initials,
       plan: 'Free'
@@ -101,14 +126,15 @@ app.post('/register', async (req, res) => {
       status: 'connected',
       avatar: initials
     });
-    res.redirect('/onboarding');
+    res.cookie('userEmail', newUser.email);
+    res.redirect(`/login?registered=true&email=${encodeURIComponent(newUser.email)}`);
   } catch (err) {
     res.render('auth/register', { page: 'register', error: err.message });
   }
 });
 
 app.get('/verify-email', (req, res) => {
-  res.render('auth/verify-email', { page: 'verify-email', email: 'kumarshivam51238@gmail.com' });
+  res.redirect('/login');
 });
 
 app.get('/forgot-password', (req, res) => {
@@ -117,14 +143,14 @@ app.get('/forgot-password', (req, res) => {
 
 // Onboarding
 app.get('/onboarding', async (req, res) => {
-  const user = await getCurrentUser();
+  const user = await getCurrentUser(req);
   res.render('onboarding', { user, page: 'onboarding' });
 });
 
 // Dashboard
 app.get('/dashboard', async (req, res) => {
   try {
-    const user = await getCurrentUser();
+    const user = await getCurrentUser(req);
     const category = req.query.category || 'all';
     const search = req.query.search || '';
     const sort = req.query.sort || 'lastActive';
@@ -183,7 +209,7 @@ app.get('/dashboard/account/:id', async (req, res) => {
 // Security Center
 app.get('/security', async (req, res) => {
   try {
-    const user = await getCurrentUser();
+    const user = await getCurrentUser(req);
     const tab = req.query.tab || 'overview';
     const allAccounts = await Account.find(user ? { userId: user._id } : {}).lean();
     
@@ -211,7 +237,7 @@ app.get('/security', async (req, res) => {
 // Breach Monitor
 app.get('/breaches', async (req, res) => {
   try {
-    const user = await getCurrentUser();
+    const user = await getCurrentUser(req);
     const breaches = await Breach.find(user ? { userId: user._id } : {}).lean();
     const accounts = await Account.find(user ? { userId: user._id } : {}).lean();
 
@@ -230,7 +256,7 @@ app.get('/breaches', async (req, res) => {
 // Email Manager
 app.get('/emails', async (req, res) => {
   try {
-    const user = await getCurrentUser();
+    const user = await getCurrentUser(req);
     const emails = await EmailAccount.find(user ? { userId: user._id } : {}).lean();
 
     res.render('emails', {
@@ -247,7 +273,7 @@ app.get('/emails', async (req, res) => {
 // Cleanup Center
 app.get('/cleanup', async (req, res) => {
   try {
-    const user = await getCurrentUser();
+    const user = await getCurrentUser(req);
     const inactiveAccounts = await Account.find({
       ...(user ? { userId: user._id } : {}),
       activityStatus: 'inactive'
@@ -266,7 +292,7 @@ app.get('/cleanup', async (req, res) => {
 
 // Notifications
 app.get('/notifications', async (req, res) => {
-  const user = await getCurrentUser();
+  const user = await getCurrentUser(req);
   res.render('notifications', {
     user,
     page: 'notifications',
@@ -277,7 +303,7 @@ app.get('/notifications', async (req, res) => {
 // Settings
 app.get('/settings', async (req, res) => {
   try {
-    const user = await getCurrentUser();
+    const user = await getCurrentUser(req);
     const tab = req.query.tab || 'profile';
     const emails = await EmailAccount.find(user ? { userId: user._id } : {}).lean();
 
@@ -296,7 +322,7 @@ app.get('/settings', async (req, res) => {
 // Settings Profile Update POST
 app.post('/settings/profile', async (req, res) => {
   try {
-    const user = await getCurrentUser();
+    const user = await getCurrentUser(req);
     if (user) {
       if (req.body.name) user.name = req.body.name;
       if (req.body.email) user.email = req.body.email;

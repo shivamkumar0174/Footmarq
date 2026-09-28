@@ -31,9 +31,9 @@
           <h1 style="font-size:1.5rem;margin-bottom:4px">Email Accounts</h1>
           <p class="page-subtitle">Manage your connected email identities. Each email is scanned separately for linked accounts.</p>
         </div>
-        <button class="btn btn-primary" onclick="showToast('Add email — coming in backend phase','info')">
-          + Add Email Account
-        </button>
+        <a href="/auth/google" class="btn btn-primary" style="text-decoration:none">
+          + Add Gmail Account
+        </a>
       </div>
 
       <% emails.forEach(function(emailAcc) { %>

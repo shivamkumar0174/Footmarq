@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Security Code — Footmarq</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .otp-inputs {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin: 24px 0;
+    }
+    .otp-field {
+      width: 48px;
+      height: 56px;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: var(--bg-elevated, #1e293b);
+      border: 1px solid var(--border, #334155);
+      border-radius: 10px;
+      color: var(--text-primary, #f8fafc);
+      transition: all 0.2s ease;
+    }
+    .otp-field:focus {
+      border-color: var(--accent-light, #38bdf8);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-left">
+    <div class="auth-hero">
+      <div class="auth-hero-badge">🛡️ Two-Factor Authentication</div>
+      <h1>Protecting your digital identity</h1>
+      <p>We've sent a 6-digit security code to your email address to verify your sign-in attempt.</p>
+      <div class="feature-list">
+        <div class="feature-item"><div class="feature-icon">⏱️</div> Code valid for 10 minutes</div>
+        <div class="feature-item"><div class="feature-icon">🔒</div> End-to-end multi-factor security</div>
+        <div class="feature-item"><div class="feature-icon">✉️</div> Sent directly to your inbox</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-form-container">
+      <div class="auth-logo">
+        <div class="logo-mark">M</div>
+        <div class="logo-text">Foot<span>marq</span></div>
+      </div>
+      <h2 class="auth-title">Enter Security Code</h2>
+      <p class="auth-subtitle">Code sent to <strong style="color:var(--text-primary);"><%= email %></strong></p>
+
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#fca5a5;padding:10px 14px;border-radius:8px;font-size:0.85rem;margin-bottom:16px;">
+          ⚠️ <%= error %>
+        </div>
+      <% } %>
+      <% if (typeof success !== 'undefined' && success) { %>
+        <div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#86efac;padding:10px 14px;border-radius:8px;font-size:0.85rem;margin-bottom:16px;">
+          ✅ <%= success %>
+        </div>
+      <% } %>
+
+      <form action="/verify-otp" method="POST" id="otp-form">
+        <input type="hidden" name="email" value="<%= email %>">
+        <input type="hidden" name="otp" id="otp-full-code">
+
+        <div class="otp-inputs">
+          <input type="text" class="otp-field" maxlength="1" pattern="[0-9]" inputmode="numeric" autofocus required>
+          <input type="text" class="otp-field" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+          <input type="text" class="otp-field" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+          <input type="text" class="otp-field" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+          <input type="text" class="otp-field" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+          <input type="text" class="otp-field" maxlength="1" pattern="[0-9]" inputmode="numeric" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-full" style="justify-content:center;margin-top:8px">
+          Verify & Sign In →
+        </button>
+      </form>
+
+      <div class="auth-footer" style="margin-top:20px">
+        Didn't receive the code? 
+        <a href="/resend-otp?email=<%= encodeURIComponent(email) %>" style="color:var(--accent-light);font-weight:600">Resend Code</a>
+        · <a href="/login">Back to Sign In</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const fields = document.querySelectorAll('.otp-field');
+  const hiddenInput = document.getElementById('otp-full-code');
+
+  fields.forEach((field, index) => {
+    field.addEventListener('input', (e) => {
+      const val = e.target.value;
+      if (val && index < fields.length - 1) {
+        fields[index + 1].focus();
+      }
+      updateFullCode();
+    });
+
+    field.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && !field.value && index > 0) {
+        fields[index - 1].focus();
+      }
+    });
+
+    field.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const pasteData = (e.clipboardData || window.clipboardData).getData('text').trim();
+      if (/^\d{6}$/.test(pasteData)) {
+        pasteData.split('').forEach((char, i) => {
+          if (fields[i]) fields[i].value = char;
+        });
+        updateFullCode();
+        document.getElementById('otp-form').submit();
+      }
+    });
+  });
+
+  function updateFullCode() {
+    hiddenInput.value = Array.from(fields).map(f => f.value).join('');
+  }
+
+  document.getElementById('otp-form').addEventListener('submit', (e) => {
+    updateFullCode();
+    if (hiddenInput.value.length !== 6) {
+      e.preventDefault();
+      alert('Please enter all 6 digits of the verification code.');
+    }
+  });
+</script>
+</body>
+</html>

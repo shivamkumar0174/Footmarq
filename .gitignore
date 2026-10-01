@@ -2,6 +2,7 @@ node_modules/
 market/
 plans/
 .env
+.env.example
 certs/
 *.pem
 *.key

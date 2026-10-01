@@ -133,15 +133,18 @@ exports.postRegister = async (req, res) => {
       plan: 'Free'
     });
     
-    // Add default email account
+    // Add primary email account (pre-verified — user registered with this address)
+    const regDomain = userEmail.split('@')[1] || '';
+    const regProvider = regDomain.includes('gmail') ? 'Gmail'
+      : regDomain.includes('outlook') || regDomain.includes('hotmail') ? 'Outlook'
+      : regDomain.includes('yahoo') ? 'Yahoo' : 'Other';
     await EmailAccount.create({
       userId: newUser._id,
       email: newUser.email,
-      provider: 'Gmail',
-      connected: true,
-      lastScan: 'Just now',
-      accountsFound: 0,
-      status: 'connected',
+      provider: regProvider,
+      isPrimary: true,
+      isVerified: true,
+      scanStatus: 'never_scanned',
       avatar: initials
     });
 
@@ -171,6 +174,9 @@ exports.getOnboarding = async (req, res) => {
 // ── Google OAuth Handlers ─────────────────────────────────────
 const { getGoogleAuthUrl, handleGoogleCallback } = require('../config/googleOAuth');
 const { scanUserGmail } = require('../services/gmailScanner');
+
+// NOTE: Login OAuth uses LOGIN_SCOPES only (openid + profile + email).
+// Gmail read permission is requested SEPARATELY via /emails/:id/gmail/connect.
 
 // Redirect to Google Consent Screen
 exports.googleLogin = (req, res) => {
@@ -216,17 +222,19 @@ exports.googleCallback = async (req, res) => {
       await user.save();
     }
 
-    // Ensure EmailAccount entry exists
+    // Ensure primary EmailAccount entry exists (Google login = Gmail, pre-verified)
     await EmailAccount.findOneAndUpdate(
       { userId: user._id, email: user.email },
       {
-        userId: user._id,
-        email: user.email,
-        provider: 'Gmail',
-        connected: true,
-        lastScan: 'Just now',
-        status: 'connected',
-        avatar: initials
+        $setOnInsert: {
+          userId: user._id,
+          email: user.email,
+          provider: 'Gmail',
+          isPrimary: true,
+          isVerified: true,
+          scanStatus: 'never_scanned',
+          avatar: initials
+        }
       },
       { upsert: true, new: true }
     );
@@ -274,13 +282,15 @@ exports.googleSandbox = async (req, res) => {
     await EmailAccount.findOneAndUpdate(
       { userId: user._id, email: user.email },
       {
-        userId: user._id,
-        email: user.email,
-        provider: 'Gmail',
-        connected: true,
-        lastScan: 'Just now',
-        status: 'connected',
-        avatar: 'SK'
+        $setOnInsert: {
+          userId: user._id,
+          email: user.email,
+          provider: 'Gmail',
+          isPrimary: true,
+          isVerified: true,
+          scanStatus: 'never_scanned',
+          avatar: 'SK'
+        }
       },
       { upsert: true, new: true }
     );

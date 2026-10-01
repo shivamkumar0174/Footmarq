@@ -1,5 +1,4 @@
 const Account = require('../models/Account');
-const { notificationsData } = require('../data/mockData');
 const { getCurrentUser } = require('../utils/helpers');
 
 // Cleanup Center View
@@ -15,7 +14,7 @@ exports.getCleanup = async (req, res) => {
       user,
       page: 'cleanup',
       accounts: inactiveAccounts,
-      notifications: notificationsData.filter(n => !n.read).length,
+      notifications: 0, // Real notifications coming in future phase
     });
   } catch (err) {
     res.status(500).send('Server Error');

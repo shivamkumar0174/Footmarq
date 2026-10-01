@@ -73,40 +73,13 @@ async function scanUserGmail(user) {
 
       return discoveredServices;
     } catch (err) {
-      console.warn('Gmail API scan fallback (using default account discovery):', err.message);
+      console.warn('Gmail API scan: insufficient scopes or token issue —', err.message);
     }
   }
 
-  // Fallback / Sandbox discovery: populate sample accounts linked to Google user
-  const sampleAccounts = [
-    { name: 'Google Cloud Platform', domain: 'cloud.google.com', logo: '☁️', category: 'Developer Tools', riskLevel: 'low', riskScore: 10 },
-    { name: 'GitHub', domain: 'github.com', logo: '🐙', category: 'Developer Tools', riskLevel: 'low', riskScore: 12 },
-    { name: 'Notion Workspace', domain: 'notion.so', logo: '📝', category: 'Productivity', riskLevel: 'low', riskScore: 15 },
-    { name: 'Canva', domain: 'canva.com', logo: '🎨', category: 'Design', riskLevel: 'low', riskScore: 20 },
-    { name: 'Spotify', domain: 'spotify.com', logo: '🎵', category: 'Entertainment', riskLevel: 'moderate', riskScore: 35 }
-  ];
-
-  for (const svc of sampleAccounts) {
-    await Account.findOneAndUpdate(
-      { userId: user._id, domain: svc.domain },
-      {
-        userId: user._id,
-        name: svc.name,
-        category: svc.category,
-        email: user.email,
-        logo: svc.logo,
-        domain: svc.domain,
-        firstSeen: 'Discovered via Google Auth',
-        lastActive: 'Just now',
-        riskLevel: svc.riskLevel,
-        riskScore: svc.riskScore,
-        activityStatus: 'active'
-      },
-      { upsert: true, new: true }
-    );
-  }
-
-  return sampleAccounts;
+  // No valid Gmail tokens — return empty array. Real scan will happen when user
+  // grants Gmail permission via /auth/google with gmail.readonly scope.
+  return [];
 }
 
 /**

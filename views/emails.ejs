@@ -3,20 +3,291 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Email Accounts — My_Login</title>
+  <title>Email Manager — Footmarq</title>
+  <meta name="description" content="Manage your connected email identities. Each verified email can be scanned for linked digital accounts.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
+  <style>
+    /* ── Email Manager Specific Styles ──────────────────────────── */
+    .em-header { margin-bottom: 28px; }
+    .em-header h1 { font-size: 1.5rem; margin-bottom: 4px; }
+    .em-header p { font-size: 0.85rem; color: var(--text-secondary); }
+
+    .em-actions-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .em-count-pill {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 12px;
+    }
+
+    /* ── Email Card ──────────────────────────────────────────────── */
+    .em-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 22px;
+      margin-bottom: 14px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+    .em-card:hover { border-color: rgba(56,189,248,0.25); box-shadow: 0 2px 16px rgba(0,0,0,0.15); }
+    .em-card.primary-card { border-color: rgba(56,189,248,0.3); }
+
+    .em-card-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .em-avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1e40af, #0ea5e9);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .em-info { flex: 1; min-width: 0; }
+    .em-email-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
+    }
+    .em-email-addr {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      word-break: break-all;
+    }
+    .em-badge {
+      font-size: 0.68rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+    }
+    .badge-primary { background: rgba(56,189,248,0.15); color: #38bdf8; border: 1px solid rgba(56,189,248,0.3); }
+    .badge-verified { background: rgba(34,197,94,0.12); color: #22c55e; border: 1px solid rgba(34,197,94,0.25); }
+    .badge-unverified { background: rgba(234,179,8,0.12); color: #eab308; border: 1px solid rgba(234,179,8,0.25); }
+    .badge-gmail { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+    .badge-scanning { background: rgba(99,102,241,0.15); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.3); animation: pulse 2s infinite; }
+
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+    .em-meta {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .em-meta-dot::before { content: '·'; margin-right: 4px; }
+
+    .em-card-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Privacy Notice (inline warning before connect) ────────── */
+    .privacy-notice {
+      background: rgba(30,64,175,0.12);
+      border: 1px solid rgba(56,189,248,0.2);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-top: 14px;
+    }
+    .privacy-notice-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #38bdf8;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .privacy-notice ul {
+      list-style: none;
+      padding: 0; margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .privacy-notice ul li {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .privacy-notice ul li .yn { font-weight: 700; }
+    .privacy-notice ul li .yn.yes { color: #22c55e; }
+    .privacy-notice ul li .yn.no { color: #f87171; }
+
+    /* ── OTP Input Styles ────────────────────────────────────────── */
+    .otp-section {
+      margin-top: 14px;
+      padding: 16px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+    .otp-section p { font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 10px; }
+    .otp-row { display: flex; gap: 8px; align-items: center; }
+    .otp-input {
+      flex: 1;
+      max-width: 180px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 14px;
+      font-size: 1rem;
+      font-family: monospace;
+      letter-spacing: 4px;
+      color: var(--text-primary);
+      text-align: center;
+    }
+    .otp-input:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56,189,248,0.15); }
+    .otp-msg { font-size: 0.78rem; margin-top: 8px; }
+    .otp-msg.error { color: #f87171; }
+    .otp-msg.success { color: #22c55e; }
+
+    /* ── Modal Overlay ────────────────────────────────────────────── */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 28px;
+      width: 100%;
+      max-width: 480px;
+      position: relative;
+      animation: slideUp 0.2s ease;
+    }
+    @keyframes slideUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+    .modal-close {
+      position: absolute; top: 16px; right: 16px;
+      background: none; border: none;
+      color: var(--text-secondary); cursor: pointer;
+      font-size: 1.2rem; line-height: 1;
+      padding: 4px;
+    }
+    .modal-close:hover { color: var(--text-primary); }
+    .modal-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+    .modal-subtitle { font-size: 0.83rem; color: var(--text-secondary); margin-bottom: 20px; }
+
+    /* ── Add Email Form ───────────────────────────────────────────── */
+    .field-group { margin-bottom: 16px; }
+    .field-label { font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; display: block; }
+    .field-input {
+      width: 100%;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    .field-input:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 0 2px rgba(56,189,248,0.15); }
+
+    /* ── Privacy Modal ────────────────────────────────────────────── */
+    .privacy-modal-list { margin: 16px 0; display: flex; flex-direction: column; gap: 10px; }
+    .privacy-modal-row { display: flex; gap: 10px; align-items: flex-start; }
+    .privacy-modal-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .privacy-modal-text { font-size: 0.83rem; color: var(--text-secondary); line-height: 1.4; }
+    .privacy-modal-text strong { color: var(--text-primary); }
+
+    /* ── Settings Panel ────────────────────────────────────────────── */
+    .settings-panel { display: none; margin-top: 14px; padding: 16px; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 10px; }
+    .settings-panel.open { display: block; }
+    .setting-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .setting-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .setting-row-label { font-size: 0.82rem; color: var(--text-secondary); }
+
+    /* ── Info Box ─────────────────────────────────────────────────── */
+    .info-box {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    .info-box-title { font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .info-box p { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6; margin: 0; }
+    .info-box code { background: var(--bg-card); padding: 2px 6px; border-radius: 4px; font-size: 0.78rem; color: #38bdf8; }
+
+    /* ── Scan History ─────────────────────────────────────────────── */
+    .scan-history-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8rem;
+    }
+    .scan-history-item:last-child { border-bottom: none; }
+    .scan-status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px;
+    }
+    .dot-completed { background: #22c55e; }
+    .dot-failed { background: #f87171; }
+    .dot-queued { background: #eab308; }
+
+    /* ── Empty State ──────────────────────────────────────────────── */
+    .empty-email-state {
+      text-align: center;
+      padding: 48px 24px;
+      background: var(--bg-card);
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      margin-bottom: 14px;
+    }
+    .empty-email-state .icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .empty-email-state h3 { font-size: 1rem; margin-bottom: 6px; }
+    .empty-email-state p { font-size: 0.83rem; color: var(--text-secondary); }
+  </style>
 </head>
 <body>
 <div class="app-shell">
   <%- include('partials/sidebar', { user, notifications, page }) %>
   <div class="main-content">
     <header class="topbar">
-      <div class="topbar-title">Email Accounts</div>
+      <div class="topbar-title">Email Manager</div>
       <div class="topbar-actions">
-        <a href="/" class="btn btn-ghost btn-sm" title="Go to Main Page" style="display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:0.82rem;font-weight:600;text-decoration:none;">
-          🏠 Home Page
+        <a href="/" class="btn btn-ghost btn-sm" title="Home Page" style="display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:0.82rem;font-weight:600;text-decoration:none;">
+          🏠 Home
         </a>
         <a href="/notifications" class="icon-btn">🔔<% if(notifications>0){%><span class="notif-dot"></span><%}%></a>
         <a href="/settings" class="icon-btn">⚙️</a>
@@ -25,57 +296,512 @@
         </a>
       </div>
     </header>
+
     <div class="page-body">
-      <div class="flex-between mb-24">
-        <div>
-          <h1 style="font-size:1.5rem;margin-bottom:4px">Email Accounts</h1>
-          <p class="page-subtitle">Manage your connected email identities. Each email is scanned separately for linked accounts.</p>
-        </div>
-        <a href="/auth/google" class="btn btn-primary" style="text-decoration:none">
-          + Add Gmail Account
-        </a>
+      <div class="em-header">
+        <h1>Email Manager</h1>
+        <p>Add and manage your email addresses. Each verified email can be independently connected to Gmail for account discovery.</p>
       </div>
 
-      <% emails.forEach(function(emailAcc) { %>
-        <div class="email-card">
-          <div class="email-provider-logo">
-            <%= emailAcc.provider === 'Gmail' ? '📬' : '📧' %>
+      <!-- Flash Messages -->
+      <% if (flashError) { %>
+        <div id="flash-error" style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:0.85rem;color:#f87171;display:flex;align-items:center;gap:8px;">
+          ⚠️ <%= flashError %>
+        </div>
+      <% } %>
+      <% if (flashSuccess) { %>
+        <div id="flash-success" style="background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.25);border-radius:10px;padding:12px 16px;margin-bottom:16px;font-size:0.85rem;color:#22c55e;display:flex;align-items:center;gap:8px;">
+          ✅ <%= flashSuccess %>
+        </div>
+      <% } %>
+
+      <!-- Actions Bar -->
+      <div class="em-actions-bar">
+        <% if (isFreePlan) { %>
+          <span class="em-count-pill">Free Plan &mdash; <strong style="color:var(--text-primary)"><%= emails.length %> / 1</strong> email address</span>
+        <% } else { %>
+          <span class="em-count-pill"><%= emails.length %> / <%= maxEmails %> email addresses</span>
+        <% } %>
+
+        <% if (canAddMore) { %>
+          <button id="btn-add-email" class="btn btn-primary" onclick="openAddEmailModal()">
+            + Add Email Address
+          </button>
+        <% } else if (isFreePlan) { %>
+          <button class="btn btn-primary" onclick="openUpgradeModal()" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);border:none;display:flex;align-items:center;gap:6px">
+            ⭐ Upgrade to Pro
+          </button>
+        <% } else { %>
+          <span style="font-size:0.82rem;color:var(--text-secondary)">Maximum <%= maxEmails %> emails reached</span>
+        <% } %>
+      </div>
+
+      <!-- Free Plan Upgrade Banner (shown when at limit) -->
+      <% if (isFreePlan && !canAddMore) { %>
+        <div style="background:linear-gradient(135deg,rgba(124,58,237,0.12),rgba(79,70,229,0.08));border:1px solid rgba(124,58,237,0.3);border-radius:12px;padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+          <div>
+            <div style="font-size:0.88rem;font-weight:700;color:#a78bfa;margin-bottom:3px">⭐ You're on the Free Plan</div>
+            <div style="font-size:0.8rem;color:var(--text-secondary)">Free plan supports <strong style="color:var(--text-primary)">1 email address</strong>. Upgrade to Pro to connect up to <strong style="color:var(--text-primary)">5 email addresses</strong> and unlock full account discovery.</div>
           </div>
-          <div class="email-info">
-            <div class="email-address"><%= emailAcc.email %></div>
-            <div class="email-meta">
-              <strong style="color:var(--text-primary)"><%= emailAcc.provider %></strong>
-              <% if (emailAcc.connected) { %>
-                · Last scan: <%= emailAcc.lastScan %> · <strong style="color:var(--text-primary)"><%= emailAcc.accountsFound %></strong> accounts found
-              <% } else { %>
-                · Not connected
-              <% } %>
+          <button onclick="openUpgradeModal()" class="btn btn-sm" style="background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;border:none;white-space:nowrap;flex-shrink:0">View Pro Plans</button>
+        </div>
+      <% } %>
+
+      <!-- Email Cards -->
+      <% if (emails.length === 0) { %>
+        <div class="empty-email-state">
+          <div class="icon">📭</div>
+          <h3>No email addresses yet</h3>
+          <p>Add your first email address to start discovering linked digital accounts.</p>
+        </div>
+      <% } %>
+
+      <% emails.forEach(function(emailAcc, idx) { %>
+        <div class="em-card <%= emailAcc.isPrimary ? 'primary-card' : '' %>" id="email-card-<%= emailAcc._id %>">
+          <div class="em-card-top">
+            <!-- Avatar -->
+            <div class="em-avatar">
+              <%= emailAcc.provider === 'Gmail' ? '📬' : emailAcc.provider === 'Outlook' ? '📘' : emailAcc.provider === 'Yahoo' ? '💜' : '📧' %>
+            </div>
+
+            <!-- Info -->
+            <div class="em-info">
+              <div class="em-email-row">
+                <span class="em-email-addr"><%= emailAcc.email %></span>
+                <% if (emailAcc.isPrimary) { %><span class="em-badge badge-primary">Primary</span><% } %>
+                <% if (emailAcc.isVerified) { %>
+                  <span class="em-badge badge-verified">✓ Verified</span>
+                <% } else { %>
+                  <span class="em-badge badge-unverified">⚠ Unverified</span>
+                <% } %>
+                <% if (emailAcc.gmailConnected) { %>
+                  <span class="em-badge badge-gmail">📬 Gmail Connected</span>
+                <% } %>
+                <% if (emailAcc.scanStatus === 'scanning' || emailAcc.scanStatus === 'queued') { %>
+                  <span class="em-badge badge-scanning">⟳ Scanning…</span>
+                <% } %>
+              </div>
+              <div class="em-meta">
+                <span><%= emailAcc.provider %></span>
+                <% if (emailAcc.gmailConnected && emailAcc.scanStatusLabel) { %>
+                  <span class="em-meta-dot"><%= emailAcc.scanStatusLabel %></span>
+                <% } %>
+                <% if (emailAcc.totalAccountsDiscovered > 0) { %>
+                  <span class="em-meta-dot"><strong style="color:var(--text-primary)"><%= emailAcc.totalAccountsDiscovered %></strong> accounts found</span>
+                <% } %>
+              </div>
             </div>
           </div>
-          <% if (emailAcc.connected) { %>
-            <span class="connect-badge connected">● Connected</span>
-            <div style="display:flex;gap:8px">
-              <button class="btn btn-ghost btn-sm" onclick="showToast('Scan started for <%= emailAcc.email %>','success')">🔄 Re-scan</button>
-              <button class="btn btn-danger btn-sm" onclick="showToast('Disconnected <%= emailAcc.email %>','info')">Disconnect</button>
+
+          <!-- OTP verification section (only shown for unverified non-primary emails) -->
+          <% if (!emailAcc.isVerified && !emailAcc.isPrimary) { %>
+            <div class="otp-section" id="otp-section-<%= emailAcc._id %>">
+              <p>📨 A verification code was sent to <strong style="color:var(--text-primary)"><%= emailAcc.email %></strong>. Enter it below to verify ownership.</p>
+              <div class="otp-row">
+                <input type="text" class="otp-input" id="otp-input-<%= emailAcc._id %>" maxlength="6" placeholder="000000" inputmode="numeric" autocomplete="one-time-code">
+                <button class="btn btn-primary btn-sm" onclick="verifyOtp('<%= emailAcc._id %>')">Verify</button>
+                <button class="btn btn-ghost btn-sm" onclick="resendOtp('<%= emailAcc._id %>', '<%= emailAcc.email %>')">Resend</button>
+              </div>
+              <div class="otp-msg" id="otp-msg-<%= emailAcc._id %>"></div>
             </div>
-          <% } else { %>
-            <span class="connect-badge disconnected">○ Not Connected</span>
-            <a href="/onboarding" class="btn btn-primary btn-sm">🔗 Connect Gmail</a>
           <% } %>
+
+          <!-- Privacy notice + Gmail connect button (for verified Gmail, not yet connected) -->
+          <% if (emailAcc.canConnectGmail) { %>
+            <div class="privacy-notice" id="privacy-notice-<%= emailAcc._id %>">
+              <div class="privacy-notice-title">🛡️ Before connecting Gmail — what we access</div>
+              <ul>
+                <li><span class="yn yes">✅ READ</span> email headers (sender, subject, date) to identify services</li>
+                <li><span class="yn yes">✅ STORE</span> only service name and event date — nothing else</li>
+                <li><span class="yn no">❌ NEVER</span> read or store your email body text</li>
+                <li><span class="yn no">❌ NEVER</span> share your data with third parties</li>
+                <li><span class="yn no">❌ NEVER</span> sell your email data</li>
+              </ul>
+            </div>
+          <% } %>
+
+          <!-- Actions -->
+          <div class="em-card-actions">
+            <% if (!emailAcc.isVerified && !emailAcc.isPrimary) { %>
+              <!-- Nothing extra here, OTP section covers it -->
+            <% } else if (emailAcc.gmailConnected) { %>
+              <button class="btn btn-ghost btn-sm" onclick="triggerScan('<%= emailAcc._id %>')">🔄 Re-scan</button>
+              <button class="btn btn-ghost btn-sm" onclick="viewHistory('<%= emailAcc._id %>', '<%= emailAcc.email %>')">📋 History</button>
+              <button class="btn btn-ghost btn-sm" onclick="toggleSettings('<%= emailAcc._id %>')">⚙ Settings</button>
+              <button class="btn btn-danger btn-sm" onclick="disconnectGmail('<%= emailAcc._id %>', '<%= emailAcc.email %>')">Disconnect Gmail</button>
+            <% } else if (emailAcc.canConnectGmail) { %>
+              <a href="/emails/<%= emailAcc._id %>/gmail/connect" class="btn btn-primary btn-sm" onclick="return confirmPrivacy()">
+                🔗 Connect Gmail
+              </a>
+              <button class="btn btn-ghost btn-sm" onclick="toggleSettings('<%= emailAcc._id %>')">⚙ Settings</button>
+            <% } else if (emailAcc.isVerified) { %>
+              <button class="btn btn-ghost btn-sm" onclick="toggleSettings('<%= emailAcc._id %>')">⚙ Settings</button>
+              <% if (!emailAcc.isPrimary) { %>
+                <button class="btn btn-danger btn-sm" onclick="deleteEmail('<%= emailAcc._id %>', '<%= emailAcc.email %>')">Remove</button>
+              <% } %>
+            <% } %>
+            <% if (!emailAcc.isPrimary && emailAcc.isVerified) { %>
+              <button class="btn btn-danger btn-sm" onclick="deleteEmail('<%= emailAcc._id %>', '<%= emailAcc.email %>')" style="margin-left:auto">🗑 Remove</button>
+            <% } %>
+          </div>
+
+          <!-- Settings panel (hidden by default) -->
+          <div class="settings-panel" id="settings-panel-<%= emailAcc._id %>">
+            <div class="setting-row">
+              <span class="setting-row-label">Include in Breach Check</span>
+              <input type="checkbox" <%= emailAcc.includeInBreachCheck ? 'checked' : '' %>
+                onchange="updateSetting('<%= emailAcc._id %>', 'includeInBreachCheck', this.checked)">
+            </div>
+            <div class="setting-row">
+              <span class="setting-row-label">Include in Digital Footprint</span>
+              <input type="checkbox" <%= emailAcc.includeInDigitalFootprint ? 'checked' : '' %>
+                onchange="updateSetting('<%= emailAcc._id %>', 'includeInDigitalFootprint', this.checked)">
+            </div>
+            <div class="setting-row">
+              <span class="setting-row-label">Auto-Scan</span>
+              <input type="checkbox" <%= emailAcc.autoScanEnabled ? 'checked' : '' %>
+                onchange="updateSetting('<%= emailAcc._id %>', 'autoScanEnabled', this.checked)">
+            </div>
+            <div class="setting-row">
+              <span class="setting-row-label">Scan Frequency</span>
+              <select class="field-input" style="width:auto;padding:4px 8px;font-size:0.8rem"
+                onchange="updateSetting('<%= emailAcc._id %>', 'scanFrequency', this.value)">
+                <option value="daily" <%= emailAcc.scanFrequency === 'daily' ? 'selected' : '' %>>Daily</option>
+                <option value="weekly" <%= emailAcc.scanFrequency === 'weekly' ? 'selected' : '' %>>Weekly</option>
+                <option value="monthly" <%= emailAcc.scanFrequency === 'monthly' ? 'selected' : '' %>>Monthly</option>
+                <option value="manual" <%= emailAcc.scanFrequency === 'manual' ? 'selected' : '' %>>Manual only</option>
+              </select>
+            </div>
+          </div>
         </div>
       <% }) %>
 
-      <!-- Info box -->
-      <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-top:8px">
-        <div style="font-size:0.8rem;font-weight:600;color:var(--text-secondary);margin-bottom:8px">📋 About Gmail Connection</div>
-        <div style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6">
-          We request <code style="background:var(--bg-card);padding:2px 6px;border-radius:4px;font-size:0.78rem">gmail.readonly</code> scope to scan email <strong>metadata only</strong> — sender addresses, subjects, and timestamps. We never read the body of your emails, and you can revoke access anytime from your Google Account security settings.
-        </div>
+      <!-- Info Box -->
+      <div class="info-box">
+        <div class="info-box-title">📋 About Gmail Permission</div>
+        <p>
+          Footmarq requests <code>gmail.readonly</code> scope to scan email <strong>metadata only</strong> —
+          sender addresses, subjects, and timestamps. We never read the body of your emails.
+          Gmail permission is always requested <strong>separately from your login</strong> and only after
+          you explicitly click "Connect Gmail". You can revoke access at any time from
+          your <a href="https://myaccount.google.com/permissions" target="_blank" style="color:#38bdf8">Google Account Security Settings</a>.
+        </p>
       </div>
     </div>
   </div>
 </div>
+
+<!-- ── Add Email Modal ──────────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="modal-add-email">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeAddEmailModal()">✕</button>
+    <div class="modal-title">Add Email Address</div>
+    <div class="modal-subtitle">You can add up to <%= maxEmails %> email addresses. A verification code will be sent to the address you enter.</div>
+
+    <div class="field-group">
+      <label class="field-label" for="new-email-input">Email Address</label>
+      <input class="field-input" type="email" id="new-email-input" placeholder="you@example.com" autocomplete="email">
+    </div>
+    <div id="add-email-msg" style="font-size:0.82rem;margin-bottom:12px;min-height:18px;"></div>
+    <button class="btn btn-primary" style="width:100%" id="btn-submit-email" onclick="submitAddEmail()">
+      Send Verification Code
+    </button>
+  </div>
+</div>
+
+<!-- ── Scan History Modal ──────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="modal-scan-history">
+  <div class="modal-box">
+    <button class="modal-close" onclick="document.getElementById('modal-scan-history').classList.remove('open')">✕</button>
+    <div class="modal-title" id="history-modal-title">Scan History</div>
+    <div id="history-modal-body" style="margin-top:12px;max-height:360px;overflow-y:auto;">
+      <p style="color:var(--text-secondary);font-size:0.83rem">Loading…</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── Upgrade Modal ────────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="modal-upgrade">
+  <div class="modal-box" style="max-width:460px">
+    <button class="modal-close" onclick="document.getElementById('modal-upgrade').classList.remove('open')">✕</button>
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:2rem;margin-bottom:8px">⭐</div>
+      <div class="modal-title">Upgrade to Pro</div>
+      <div class="modal-subtitle">Unlock multiple email addresses and full account discovery.</div>
+    </div>
+
+    <!-- Plan comparison -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+      <!-- Free -->
+      <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:16px">
+        <div style="font-size:0.78rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Free</div>
+        <div style="font-size:1.4rem;font-weight:800;margin-bottom:12px">$0<span style="font-size:0.75rem;font-weight:400;color:var(--text-secondary)">/mo</span></div>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:7px">
+          <li style="font-size:0.78rem;color:var(--text-secondary)">✓ 1 email address</li>
+          <li style="font-size:0.78rem;color:var(--text-secondary)">✓ Basic breach check</li>
+          <li style="font-size:0.78rem;color:var(--text-secondary)">✓ Account dashboard</li>
+          <li style="font-size:0.78rem;color:#475569">✗ Gmail scanning</li>
+          <li style="font-size:0.78rem;color:#475569">✗ Multi-email support</li>
+        </ul>
+      </div>
+      <!-- Pro -->
+      <div style="background:linear-gradient(135deg,rgba(124,58,237,0.15),rgba(79,70,229,0.1));border:1px solid rgba(124,58,237,0.4);border-radius:12px;padding:16px;position:relative">
+        <div style="position:absolute;top:-10px;right:12px;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:#fff;font-size:0.68rem;font-weight:700;padding:3px 10px;border-radius:10px;text-transform:uppercase;letter-spacing:0.05em">Popular</div>
+        <div style="font-size:0.78rem;font-weight:700;color:#a78bfa;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">Pro</div>
+        <div style="font-size:1.4rem;font-weight:800;margin-bottom:12px">$9<span style="font-size:0.75rem;font-weight:400;color:var(--text-secondary)">/mo</span></div>
+        <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:7px">
+          <li style="font-size:0.78rem;color:#c4b5fd">✓ Up to 5 email addresses</li>
+          <li style="font-size:0.78rem;color:#c4b5fd">✓ Gmail inbox scanning</li>
+          <li style="font-size:0.78rem;color:#c4b5fd">✓ Full account discovery</li>
+          <li style="font-size:0.78rem;color:#c4b5fd">✓ Breach monitoring</li>
+          <li style="font-size:0.78rem;color:#c4b5fd">✓ Priority support</li>
+        </ul>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" style="width:100%;background:linear-gradient(135deg,#7c3aed,#4f46e5);border:none;padding:12px;font-size:0.95rem" onclick="showToast('Billing coming soon — stay tuned! 🚀','info');document.getElementById('modal-upgrade').classList.remove('open')">
+      Get Pro &mdash; $9 / month
+    </button>
+    <p style="text-align:center;font-size:0.75rem;color:var(--text-secondary);margin-top:10px">Cancel anytime &bull; 7-day free trial</p>
+  </div>
+</div>
+
 <div id="toast-container" class="toast-container"></div>
 <script src="/js/app.js"></script>
+<script>
+  // ── State ────────────────────────────────────────────────────────────────
+  let privacyConfirmed = false;
+
+  // ── Upgrade Modal ─────────────────────────────────────────────────────────
+  function openUpgradeModal() {
+    document.getElementById('modal-upgrade').classList.add('open');
+  }
+
+  // ── Add Email Modal ───────────────────────────────────────────────────────
+  function openAddEmailModal() {
+    document.getElementById('modal-add-email').classList.add('open');
+    document.getElementById('new-email-input').focus();
+    document.getElementById('add-email-msg').textContent = '';
+  }
+  function closeAddEmailModal() {
+    document.getElementById('modal-add-email').classList.remove('open');
+  }
+  document.getElementById('new-email-input')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') submitAddEmail();
+  });
+
+  async function submitAddEmail() {
+    const input = document.getElementById('new-email-input');
+    const msgEl = document.getElementById('add-email-msg');
+    const btn = document.getElementById('btn-submit-email');
+    const email = input.value.trim();
+
+    if (!email) { msgEl.style.color='#f87171'; msgEl.textContent = 'Please enter an email address.'; return; }
+    btn.disabled = true; btn.textContent = 'Sending…';
+    msgEl.style.color='var(--text-secondary)'; msgEl.textContent = 'Sending verification code…';
+
+    try {
+      const res = await fetch('/api/emails', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      if (data.success) {
+        msgEl.style.color = '#22c55e'; msgEl.textContent = data.message;
+        btn.textContent = 'Code Sent!';
+        setTimeout(() => { closeAddEmailModal(); location.reload(); }, 1800);
+      } else if (data.upgradeRequired) {
+        // Free plan limit hit — open upgrade modal instead
+        closeAddEmailModal();
+        openUpgradeModal();
+      } else {
+        msgEl.style.color = '#f87171'; msgEl.textContent = data.error || 'Failed to add email.';
+        btn.disabled = false; btn.textContent = 'Send Verification Code';
+      }
+    } catch (err) {
+      msgEl.style.color = '#f87171'; msgEl.textContent = 'Network error. Please try again.';
+      btn.disabled = false; btn.textContent = 'Send Verification Code';
+    }
+  }
+
+  // ── OTP Verification ──────────────────────────────────────────────────────
+  async function verifyOtp(emailId) {
+    const otp = document.getElementById(`otp-input-${emailId}`)?.value.trim();
+    const msgEl = document.getElementById(`otp-msg-${emailId}`);
+    if (!otp || otp.length !== 6) {
+      msgEl.className = 'otp-msg error'; msgEl.textContent = 'Please enter a 6-digit code.'; return;
+    }
+    msgEl.className = 'otp-msg'; msgEl.textContent = 'Verifying…';
+
+    try {
+      const res = await fetch(`/api/emails/${emailId}/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ otp })
+      });
+      const data = await res.json();
+      if (data.success) {
+        msgEl.className = 'otp-msg success'; msgEl.textContent = data.message;
+        showToast(data.message, 'success');
+        setTimeout(() => location.reload(), 1500);
+      } else {
+        msgEl.className = 'otp-msg error'; msgEl.textContent = data.error || 'Verification failed.';
+      }
+    } catch (err) {
+      msgEl.className = 'otp-msg error'; msgEl.textContent = 'Network error.';
+    }
+  }
+
+  async function resendOtp(emailId, email) {
+    const msgEl = document.getElementById(`otp-msg-${emailId}`);
+    msgEl.className = 'otp-msg'; msgEl.textContent = 'Sending new code…';
+
+    try {
+      const res = await fetch(`/api/emails/${emailId}/resend-otp`, { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        msgEl.className = 'otp-msg success'; msgEl.textContent = `New code sent to ${email}`;
+        showToast('New verification code sent!', 'success');
+      } else {
+        msgEl.className = 'otp-msg error'; msgEl.textContent = data.error || 'Failed to resend.';
+      }
+    } catch {
+      msgEl.className = 'otp-msg error'; msgEl.textContent = 'Network error.';
+    }
+  }
+
+  // ── Privacy Confirmation ──────────────────────────────────────────────────
+  function confirmPrivacy() {
+    if (privacyConfirmed) return true;
+    privacyConfirmed = confirm(
+      '🛡️ Before connecting Gmail, please confirm:\n\n' +
+      '✅ We READ email headers (sender, subject, date) to identify services.\n' +
+      '✅ We STORE only the service name and event date.\n' +
+      '❌ We NEVER read or store your email body text.\n' +
+      '❌ We NEVER share your data with third parties.\n\n' +
+      'Click OK to proceed to Google\'s permission screen.'
+    );
+    return privacyConfirmed;
+  }
+
+  // ── Gmail Disconnect ──────────────────────────────────────────────────────
+  async function disconnectGmail(emailId, email) {
+    if (!confirm(`Disconnect Gmail from ${email}?\n\nYour already-discovered accounts will be preserved.`)) return;
+
+    try {
+      const res = await fetch(`/api/emails/${emailId}/gmail/disconnect`, { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        showToast(data.message, 'info');
+        setTimeout(() => location.reload(), 1200);
+      } else {
+        showToast(data.error || 'Failed to disconnect.', 'error');
+      }
+    } catch {
+      showToast('Network error.', 'error');
+    }
+  }
+
+  // ── Gmail Re-Scan ─────────────────────────────────────────────────────────
+  async function triggerScan(emailId) {
+    try {
+      const res = await fetch(`/api/emails/${emailId}/scan`, { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Scan queued! Results will appear soon.', 'success');
+        setTimeout(() => location.reload(), 1000);
+      } else {
+        showToast(data.error || 'Failed to start scan.', 'error');
+      }
+    } catch {
+      showToast('Network error.', 'error');
+    }
+  }
+
+  // ── Delete Email ──────────────────────────────────────────────────────────
+  async function deleteEmail(emailId, email) {
+    if (!confirm(`Remove ${email} from your account?\n\nThis will also delete scan history for this address.`)) return;
+
+    try {
+      const res = await fetch(`/api/emails/${emailId}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        showToast(data.message, 'info');
+        const card = document.getElementById(`email-card-${emailId}`);
+        if (card) card.style.display = 'none';
+        setTimeout(() => location.reload(), 1000);
+      } else {
+        showToast(data.error || 'Failed to remove.', 'error');
+      }
+    } catch {
+      showToast('Network error.', 'error');
+    }
+  }
+
+  // ── Settings Toggle ───────────────────────────────────────────────────────
+  function toggleSettings(emailId) {
+    const panel = document.getElementById(`settings-panel-${emailId}`);
+    panel?.classList.toggle('open');
+  }
+
+  async function updateSetting(emailId, key, value) {
+    try {
+      await fetch(`/api/emails/${emailId}/settings`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [key]: value })
+      });
+      showToast('Setting saved.', 'success');
+    } catch {
+      showToast('Failed to save setting.', 'error');
+    }
+  }
+
+  // ── Scan History ──────────────────────────────────────────────────────────
+  async function viewHistory(emailId, email) {
+    document.getElementById('history-modal-title').textContent = `Scan History — ${email}`;
+    document.getElementById('history-modal-body').innerHTML = '<p style="color:var(--text-secondary);font-size:0.83rem">Loading…</p>';
+    document.getElementById('modal-scan-history').classList.add('open');
+
+    try {
+      const res = await fetch(`/api/emails/${emailId}/scans`);
+      const data = await res.json();
+      const scans = data.scans || [];
+
+      if (scans.length === 0) {
+        document.getElementById('history-modal-body').innerHTML =
+          '<p style="color:var(--text-secondary);font-size:0.83rem">No scan history yet.</p>';
+        return;
+      }
+
+      const dotColor = s => s === 'completed' ? 'dot-completed' : s === 'failed' ? 'dot-failed' : 'dot-queued';
+      const html = scans.map(s => `
+        <div class="scan-history-item">
+          <span><span class="scan-status-dot ${dotColor(s.status)}"></span>${s.status}</span>
+          <span style="color:var(--text-secondary)">${s.emailsProcessed} emails · ${s.accountsDiscovered} found</span>
+          <span style="color:var(--text-secondary);font-size:0.75rem">${s.startedAt ? new Date(s.startedAt).toLocaleDateString() : '—'}</span>
+        </div>
+      `).join('');
+      document.getElementById('history-modal-body').innerHTML = html;
+    } catch {
+      document.getElementById('history-modal-body').innerHTML =
+        '<p style="color:#f87171;font-size:0.83rem">Failed to load history.</p>';
+    }
+  }
+
+  // Close modals on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+  });
+
+  // Auto-hide flash messages after 5 seconds
+  setTimeout(() => {
+    ['flash-error', 'flash-success'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+  }, 5000);
+</script>
 </body>
 </html>

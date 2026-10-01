@@ -1,6 +1,5 @@
 const Account = require('../models/Account');
 const Breach = require('../models/Breach');
-const { notificationsData } = require('../data/mockData');
 const { getCurrentUser } = require('../utils/helpers');
 
 // Breach Monitor View
@@ -15,7 +14,7 @@ exports.getBreaches = async (req, res) => {
       page: 'breaches',
       breaches,
       accounts,
-      notifications: notificationsData.filter(n => !n.read).length,
+      notifications: 0, // Real notifications coming in future phase
     });
   } catch (err) {
     res.status(500).send('Server Error');

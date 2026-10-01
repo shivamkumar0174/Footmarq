@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Notifications — My_Login</title>
+  <title>Notifications — Footmarq</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
 <div class="app-shell">
-  <%- include('partials/sidebar', { user, page, notifications: notifications.filter ? notifications.filter(n=>!n.read).length : 0 }) %>
+  <%- include('partials/sidebar', { user, page, notifications: 0 }) %>
   <div class="main-content">
     <header class="topbar">
       <div class="topbar-title">Notifications</div>
@@ -18,7 +18,6 @@
         <a href="/" class="btn btn-ghost btn-sm" title="Go to Main Page" style="display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:0.82rem;font-weight:600;text-decoration:none;">
           🏠 Home Page
         </a>
-        <button class="icon-btn" onclick="showToast('All marked as read','success')" title="Mark all read">✓</button>
         <a href="/settings" class="icon-btn">⚙️</a>
         <a href="/logout" class="icon-btn" title="Logout" onclick="return confirm('Sign out?')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
@@ -29,25 +28,41 @@
       <div class="flex-between mb-24">
         <div>
           <h1 style="font-size:1.5rem;margin-bottom:4px">Notifications</h1>
-          <p class="page-subtitle"><%= notifications.filter(n=>!n.read).length %> unread notifications</p>
+          <p class="page-subtitle">
+            <% if (notifications && notifications.length > 0) { %>
+              <%= notifications.filter(n => !n.read).length %> unread notification<%= notifications.filter(n => !n.read).length !== 1 ? 's' : '' %>
+            <% } else { %>
+              You're all caught up
+            <% } %>
+          </p>
         </div>
-        <button class="btn btn-ghost btn-sm" onclick="showToast('All marked as read','success')">Mark all read</button>
       </div>
 
-      <% const notifIcons = {breach:'🚨',scan:'🔍',risk:'📊',tip:'💡',info:'ℹ️'}; %>
-      <% notifications.forEach(function(notif) { %>
-        <div class="notif-item <%= !notif.read ? (notif.severity === 'critical' ? 'critical' : 'unread') : '' %>">
-          <span class="notif-icon"><%= notifIcons[notif.type] || 'ℹ️' %></span>
-          <div class="notif-body">
-            <div class="notif-title"><%= notif.title %></div>
-            <div class="notif-message"><%= notif.message %></div>
-            <div class="notif-time"><%= notif.time %></div>
-          </div>
-          <% if (!notif.read) { %>
-            <div class="unread-dot"></div>
-          <% } %>
+      <% if (!notifications || notifications.length === 0) { %>
+        <!-- Empty State -->
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 24px;text-align:center;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);">
+          <div style="font-size:3rem;margin-bottom:16px;opacity:0.4">🔔</div>
+          <h2 style="font-size:1.1rem;font-weight:600;color:var(--text-primary);margin-bottom:8px">No notifications yet</h2>
+          <p style="font-size:0.875rem;color:var(--text-muted);max-width:380px;line-height:1.6">
+            When we detect breaches, account risks, or security events linked to your accounts, they'll appear here in real time.
+          </p>
         </div>
-      <% }) %>
+      <% } else { %>
+        <% const notifIcons = {breach:'🚨',scan:'🔍',risk:'📊',tip:'💡',info:'ℹ️'}; %>
+        <% notifications.forEach(function(notif) { %>
+          <div class="notif-item <%= !notif.read ? (notif.severity === 'critical' ? 'critical' : 'unread') : '' %>">
+            <span class="notif-icon"><%= notifIcons[notif.type] || 'ℹ️' %></span>
+            <div class="notif-body">
+              <div class="notif-title"><%= notif.title %></div>
+              <div class="notif-message"><%= notif.message %></div>
+              <div class="notif-time"><%= notif.time %></div>
+            </div>
+            <% if (!notif.read) { %>
+              <div class="unread-dot"></div>
+            <% } %>
+          </div>
+        <% }) %>
+      <% } %>
     </div>
   </div>
 </div>

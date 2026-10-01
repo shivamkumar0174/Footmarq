@@ -1,6 +1,8 @@
 const Account = require('../models/Account');
-const { notificationsData, accountTimelines } = require('../data/mockData');
-const { getCurrentUser, getDashboardStats } = require('../utils/helpers');
+const { getCurrentUser } = require('../utils/helpers');
+
+// Notification Model doesn't exist yet — notifications will be real-time in future.
+// For now, notification count is always 0 for real users.
 
 // Dashboard View
 exports.getDashboard = async (req, res) => {
@@ -25,7 +27,13 @@ exports.getDashboard = async (req, res) => {
       filtered = filtered.filter(a => a.riskLevel === riskFilter);
     }
 
-    const stats = getDashboardStats(allAccounts);
+    const stats = {
+      total: allAccounts.length,
+      breached: allAccounts.filter(a => a.isBreached).length,
+      highRisk: allAccounts.filter(a => ['high', 'critical'].includes(a.riskLevel)).length,
+      inactive: allAccounts.filter(a => a.activityStatus === 'inactive').length,
+    };
+
     const categories = [...new Set(allAccounts.map(a => a.category))];
 
     res.render('dashboard', {
@@ -39,7 +47,7 @@ exports.getDashboard = async (req, res) => {
       sort,
       view,
       riskFilter,
-      notifications: notificationsData.filter(n => !n.read).length,
+      notifications: 0, // Real notifications coming in future phase
     });
   } catch (err) {
     console.error(err);
@@ -52,7 +60,7 @@ exports.getAccountDetail = async (req, res) => {
   try {
     const account = await Account.findById(req.params.id).lean();
     if (!account) return res.status(404).send('Account not found');
-    const timeline = accountTimelines[req.params.id] || [
+    const timeline = [
       { type: 'signup', label: 'Account Created', date: account.firstSeen, icon: '🔵' }
     ];
     res.render('partials/account-detail', { account, timeline });

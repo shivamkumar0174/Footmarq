@@ -1,5 +1,4 @@
 const EmailAccount = require('../models/EmailAccount');
-const { notificationsData } = require('../data/mockData');
 const { getCurrentUser } = require('../utils/helpers');
 
 // Settings View
@@ -20,7 +19,7 @@ exports.getSettings = async (req, res) => {
       page: 'settings',
       tab,
       emails,
-      notifications: notificationsData.filter(n => !n.read).length,
+      notifications: 0, // Real notifications coming in future phase
     });
   } catch (err) {
     console.error('Settings Error:', err);

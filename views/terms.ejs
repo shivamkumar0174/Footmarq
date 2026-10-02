@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Footmarq Terms of Service — The rules and agreements that govern your use of the Footmarq digital identity platform.">
+  <title>Terms of Service — Footmarq</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .terms-page {
+      min-height: 100vh;
+      background: var(--bg-base);
+    }
+
+    /* Navbar */
+    .terms-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10, 13, 20, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 60px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .terms-nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .terms-nav-brand span {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .terms-nav-brand span em {
+      color: var(--accent-light);
+      font-style: normal;
+    }
+
+    .terms-nav-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      transition: color 200ms;
+      text-decoration: none;
+    }
+
+    .terms-nav-back:hover {
+      color: var(--accent-light);
+    }
+
+    /* Hero */
+    .terms-hero {
+      padding: 80px 60px 60px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .terms-hero::before {
+      content: '';
+      position: absolute;
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 500px;
+      background: radial-gradient(ellipse, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .terms-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 99px;
+      padding: 6px 16px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #f59e0b;
+      margin-bottom: 24px;
+    }
+
+    .terms-hero h1 {
+      font-size: 3rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 18px;
+      background: linear-gradient(135deg, #fff 0%, var(--accent-light) 60%, #22d3ee 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .terms-hero p {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      max-width: 560px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .terms-meta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      margin-top: 32px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Layout */
+    .terms-layout {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 60px 80px;
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+
+    /* TOC */
+    .terms-toc {
+      position: sticky;
+      top: 88px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+    }
+
+    .terms-toc h4 {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .toc-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .toc-link {
+      display: block;
+      padding: 7px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      transition: all 200ms;
+      text-decoration: none;
+    }
+
+    .toc-link:hover {
+      background: var(--bg-hover);
+      color: var(--accent-light);
+    }
+
+    .toc-link.active {
+      background: var(--accent-dim);
+      color: var(--accent-light);
+      font-weight: 500;
+    }
+
+    /* Sections */
+    .terms-content {
+      min-width: 0;
+    }
+
+    .terms-section {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      margin-bottom: 24px;
+      scroll-margin-top: 88px;
+      transition: border-color 200ms;
+    }
+
+    .terms-section:hover {
+      border-color: rgba(99, 102, 241, 0.2);
+    }
+
+    .section-icon-title {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .section-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+
+    .icon-purple {
+      background: rgba(99, 102, 241, 0.15);
+    }
+
+    .icon-green {
+      background: rgba(34, 197, 94, 0.12);
+    }
+
+    .icon-blue {
+      background: rgba(34, 211, 238, 0.12);
+    }
+
+    .icon-amber {
+      background: rgba(245, 158, 11, 0.12);
+    }
+
+    .icon-red {
+      background: rgba(239, 68, 68, 0.12);
+    }
+
+    .icon-pink {
+      background: rgba(236, 72, 153, 0.12);
+    }
+
+    .icon-teal {
+      background: rgba(20, 184, 166, 0.12);
+    }
+
+    .terms-section h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .terms-section p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.75;
+      margin-bottom: 12px;
+    }
+
+    .terms-section p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Rule list */
+    .rule-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .rule-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .rule-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-light);
+      margin-top: 8px;
+      flex-shrink: 0;
+    }
+
+    .rule-yes {
+      color: #22c55e;
+      font-size: 1rem;
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+
+    .rule-no {
+      color: #ef4444;
+      font-size: 1rem;
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+
+    /* Alert box */
+    .alert-box {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin: 16px 0;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .alert-box.warn {
+      background: rgba(245, 158, 11, 0.07);
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    .alert-box.danger {
+      background: rgba(239, 68, 68, 0.07);
+      border-color: rgba(239, 68, 68, 0.25);
+    }
+
+    .alert-icon {
+      font-size: 1.1rem;
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+
+    /* Two-column grid */
+    .terms-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .terms-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      transition: border-color 200ms;
+    }
+
+    .terms-card:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+
+    .terms-card h4 {
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+
+    .terms-card p {
+      font-size: 0.8rem;
+      margin-bottom: 0;
+    }
+
+    /* Big disclaimer */
+    .disclaimer-box {
+      background: linear-gradient(135deg, var(--bg-elevated) 0%, rgba(239, 68, 68, 0.05) 100%);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin: 16px 0;
+    }
+
+    .disclaimer-box p {
+      font-size: 0.875rem;
+      line-height: 1.7;
+      margin-bottom: 0;
+    }
+
+    /* Contact box */
+    .contact-box {
+      background: linear-gradient(135deg, var(--bg-elevated) 0%, rgba(99, 102, 241, 0.08) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .contact-box-icon {
+      font-size: 2rem;
+    }
+
+    .contact-box h4 {
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .contact-box p {
+      font-size: 0.85rem;
+      margin: 0;
+    }
+
+    .contact-box a {
+      color: var(--accent-light);
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    .terms-footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text-muted);
+      font-size: 0.825rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      transition: color 200ms;
+    }
+
+    .footer-links a:hover {
+      color: var(--text-secondary);
+    }
+
+    @media (max-width: 900px) {
+      .terms-nav {
+        padding: 0 24px;
+      }
+
+      .terms-hero {
+        padding: 60px 24px 40px;
+      }
+
+      .terms-hero h1 {
+        font-size: 2.2rem;
+      }
+
+      .terms-layout {
+        grid-template-columns: 1fr;
+        padding: 0 24px 60px;
+      }
+
+      .terms-toc {
+        position: static;
+      }
+
+      .terms-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .terms-footer {
+        padding: 24px;
+        flex-direction: column;
+        gap: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body class="terms-page">
+
+  <nav class="terms-nav">
+    <a href="/" class="terms-nav-brand">
+      <div class="logo-mark" style="width:32px;height:32px;font-size:14px;">M</div>
+      <span>My<em>_Login</em></span>
+    </a>
+    <a href="/" class="terms-nav-back">← Back to Home</a>
+  </nav>
+
+  <header class="terms-hero">
+    <div class="terms-hero-badge">📋 Legal Agreement</div>
+    <h1>Terms of Service</h1>
+    <p>These terms govern your use of Footmarq. Please read them carefully — they define what you can do, what we offer,
+      and the limits of our liability.</p>
+    <div class="terms-meta">
+      <span>📅 Effective: October 2026</span>
+      <span>⏱️ ~6 min read</span>
+      <span>🏠 Applies to: footmarq.app</span>
+    </div>
+  </header>
+
+  <div class="terms-layout">
+
+    <!-- TOC -->
+    <aside class="terms-toc">
+      <h4>Contents</h4>
+      <nav class="toc-list" id="tocList">
+        <a href="#acceptance" class="toc-link">1. Acceptance of Terms</a>
+        <a href="#what-service-does" class="toc-link">2. What the Service Does</a>
+        <a href="#eligibility" class="toc-link">3. Eligibility</a>
+        <a href="#your-account" class="toc-link">4. Your Account</a>
+        <a href="#permitted-use" class="toc-link">5. Permitted Use</a>
+        <a href="#prohibited-use" class="toc-link">6. Prohibited Use</a>
+        <a href="#gmail-terms" class="toc-link">7. Gmail & Google API</a>
+        <a href="#accuracy" class="toc-link">8. Data Accuracy</a>
+        <a href="#availability" class="toc-link">9. Service Availability</a>
+        <a href="#termination" class="toc-link">10. Termination</a>
+        <a href="#disclaimer" class="toc-link">11. Disclaimer of Warranties</a>
+        <a href="#liability" class="toc-link">12. Limitation of Liability</a>
+        <a href="#changes" class="toc-link">13. Changes to Terms</a>
+        <a href="#contact-terms" class="toc-link">14. Contact & Disputes</a>
+      </nav>
+    </aside>
+
+    <main class="terms-content">
+
+      <!-- 1. Acceptance -->
+      <section class="terms-section" id="acceptance">
+        <div class="section-icon-title">
+          <div class="section-icon icon-purple">✍️</div>
+          <h2>1. Acceptance of Terms</h2>
+        </div>
+        <p>By accessing or using Footmarq (the "Service"), you confirm that you have read, understood, and agree to be
+          bound by these Terms of Service ("Terms"). This agreement is between you and Footmarq, operated by Shivam
+          Kumar ("we", "us", "our").</p>
+        <p>If you do not agree to these Terms, you must not access or use the Service. Continued use of the Service
+          after any changes to these Terms constitutes your acceptance of the revised Terms.</p>
+        <div class="alert-box">
+          <span class="alert-icon">📋</span>
+          <span>These Terms should be read together with our <a href="/privacy"
+              style="color:var(--accent-light);">Privacy Policy</a>, which explains how we collect and use your data.
+            Both documents together form the full legal agreement between you and Footmarq.</span>
+        </div>
+      </section>
+
+      <!-- 2. What Service Does -->
+      <section class="terms-section" id="what-service-does">
+        <div class="section-icon-title">
+          <div class="section-icon icon-blue">🔍</div>
+          <h2>2. What the Service Does</h2>
+        </div>
+        <p>Footmarq is a <strong style="color:var(--text-primary);">digital identity management platform</strong> that
+          helps you:</p>
+        <ul class="rule-list">
+          <li><span class="rule-dot"></span>Discover online accounts and services linked to your connected email
+            addresses by analysing email metadata (sender, subject, date).</li>
+          <li><span class="rule-dot"></span>Monitor your email addresses against known data breach databases (via Have I
+            Been Pwned).</li>
+          <li><span class="rule-dot"></span>View a security score and risk assessment based on your discovered accounts.
+          </li>
+          <li><span class="rule-dot"></span>Manage, organise, and clean up your online digital footprint.</li>
+          <li><span class="rule-dot"></span>Export and delete your data as required by applicable privacy regulations.
+          </li>
+        </ul>
+        <div class="alert-box warn">
+          <span class="alert-icon">⚠️</span>
+          <span><strong style="color:var(--text-primary);">Important:</strong> The Service discovers accounts found in
+            <em>connected mailboxes</em>. Results represent what was detectable in your email history — not a complete
+            or guaranteed list of every account you have ever created.</span>
+        </div>
+      </section>
+
+      <!-- 3. Eligibility -->
+      <section class="terms-section" id="eligibility">
+        <div class="section-icon-title">
+          <div class="section-icon icon-amber">👤</div>
+          <h2>3. Eligibility</h2>
+        </div>
+        <p>To use Footmarq, you must meet the following requirements:</p>
+        <ul class="rule-list">
+          <li><span class="rule-yes">✓</span>You must be at least <strong style="color:var(--text-primary);">13 years of
+              age</strong>, or the age of legal majority in your jurisdiction.</li>
+          <li><span class="rule-yes">✓</span>You must have the legal authority to agree to these Terms on your own
+            behalf.</li>
+          <li><span class="rule-yes">✓</span>You must provide accurate information when creating your account.</li>
+          <li><span class="rule-no">✕</span>You may not use the Service if your account has been previously suspended or
+            terminated by us.</li>
+          <li><span class="rule-no">✕</span>You may not use the Service to scan email accounts that do not belong to
+            you.</li>
+        </ul>
+      </section>
+
+      <!-- 4. Your Account -->
+      <section class="terms-section" id="your-account">
+        <div class="section-icon-title">
+          <div class="section-icon icon-teal">🔐</div>
+          <h2>4. Your Account</h2>
+        </div>
+        <p>When you create a Footmarq account, you are responsible for:</p>
+        <ul class="rule-list">
+          <li><span class="rule-dot"></span><strong style="color:var(--text-primary);">Keeping your credentials
+              secure.</strong> You must not share your password or allow others to access your account.</li>
+          <li><span class="rule-dot"></span><strong style="color:var(--text-primary);">All activity under your
+              account.</strong> You are responsible for everything that happens while you are logged in, whether or not
+            you authorised it.</li>
+          <li><span class="rule-dot"></span><strong style="color:var(--text-primary);">Notifying us immediately</strong>
+            if you suspect unauthorised access to your account at <a href="mailto:kumarshivam51238@gmail.com"
+              style="color:var(--accent-light);">kumarshivam51238@gmail.com</a>.</li>
+          <li><span class="rule-dot"></span><strong style="color:var(--text-primary);">Keeping your account information
+              accurate</strong> — particularly the email address you use for notifications.</li>
+        </ul>
+        <p>We reserve the right to suspend or close accounts that appear to be compromised, abused, or in violation of
+          these Terms.</p>
+      </section>
+
+      <!-- 5. Permitted Use -->
+      <section class="terms-section" id="permitted-use">
+        <div class="section-icon-title">
+          <div class="section-icon icon-green">✅</div>
+          <h2>5. Permitted Use</h2>
+        </div>
+        <p>You may use Footmarq only for <strong style="color:var(--text-primary);">personal, non-commercial, lawful
+            purposes</strong>. The following uses are explicitly permitted:</p>
+        <div class="terms-grid">
+          <div class="terms-card">
+            <h4>🔎 Personal Account Auditing</h4>
+            <p>Scanning your own email inboxes to discover accounts you have created over time.</p>
+          </div>
+          <div class="terms-card">
+            <h4>🛡️ Breach Monitoring</h4>
+            <p>Checking your personal email addresses against breach databases to protect yourself.</p>
+          </div>
+          <div class="terms-card">
+            <h4>📊 Security Assessment</h4>
+            <p>Reviewing your security score and risk levels to improve your digital hygiene.</p>
+          </div>
+          <div class="terms-card">
+            <h4>🗑️ Digital Cleanup</h4>
+            <p>Identifying and managing unused or risky accounts to reduce your digital footprint.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. Prohibited Use -->
+      <section class="terms-section" id="prohibited-use">
+        <div class="section-icon-title">
+          <div class="section-icon icon-red">🚫</div>
+          <h2>6. Prohibited Use</h2>
+        </div>
+        <p>The following actions are strictly prohibited and may result in immediate account termination and legal
+          action:</p>
+        <ul class="rule-list">
+          <li><span class="rule-no">✕</span>Scanning, monitoring, or accessing email accounts that do not belong to you
+            without explicit legal authorisation.</li>
+          <li><span class="rule-no">✕</span>Attempting to reverse engineer, decompile, or extract source code from the
+            Service.</li>
+          <li><span class="rule-no">✕</span>Using automated tools (bots, scrapers) to extract data from the Service
+            beyond normal use.</li>
+          <li><span class="rule-no">✕</span>Attempting to gain unauthorised access to our servers, databases, or other
+            users' accounts.</li>
+          <li><span class="rule-no">✕</span>Using the Service to harass, stalk, or surveil another person.</li>
+          <li><span class="rule-no">✕</span>Interfering with or disrupting the availability or integrity of the Service.
+          </li>
+          <li><span class="rule-no">✕</span>Using the Service for any commercial purpose without our prior written
+            consent.</li>
+          <li><span class="rule-no">✕</span>Submitting false, misleading, or fraudulent information to create an
+            account.</li>
+        </ul>
+      </section>
+
+      <!-- 7. Gmail & Google API -->
+      <section class="terms-section" id="gmail-terms">
+        <div class="section-icon-title">
+          <div class="section-icon icon-amber">📧</div>
+          <h2>7. Gmail & Google API Usage</h2>
+        </div>
+        <p>By connecting your Gmail account, you acknowledge and agree to the following:</p>
+        <ul class="rule-list">
+          <li><span class="rule-dot"></span>You are authorising Footmarq to access your Gmail <strong
+              style="color:var(--text-primary);">metadata only</strong> (sender, subject, date) — not the content of
+            your emails.</li>
+          <li><span class="rule-dot"></span>You have the legal right to connect the Gmail account you are authorising —
+            it must be your own account.</li>
+          <li><span class="rule-dot"></span>Our use of Gmail data is governed by the <a
+              href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank"
+              style="color:var(--accent-light);">Google API Services User Data Policy</a>, including the Limited Use
+            requirements.</li>
+          <li><span class="rule-dot"></span>You can revoke access at any time from <strong
+              style="color:var(--text-primary);">Settings → Privacy</strong> or directly from your <a
+              href="https://myaccount.google.com/permissions" target="_blank" style="color:var(--accent-light);">Google
+              Account Permissions</a> page.</li>
+        </ul>
+        <div class="alert-box">
+          <span class="alert-icon">🔑</span>
+          <span>Footmarq's use of information received from Google APIs will adhere to the <strong
+              style="color:var(--text-primary);">Google API Services User Data Policy</strong>, including the <strong
+              style="color:var(--text-primary);">Limited Use</strong> requirements. We do not use Gmail data for
+            advertising or share it with third parties.</span>
+        </div>
+      </section>
+
+      <!-- 8. Data Accuracy -->
+      <section class="terms-section" id="accuracy">
+        <div class="section-icon-title">
+          <div class="section-icon icon-blue">📊</div>
+          <h2>8. Data Accuracy & Limitations</h2>
+        </div>
+        <p>Footmarq uses email metadata to <strong style="color:var(--text-primary);">infer</strong> the existence of
+          online accounts. You acknowledge the following limitations:</p>
+        <ul class="rule-list">
+          <li><span class="rule-dot"></span><strong style="color:var(--text-primary);">Results are best-effort, not
+              guaranteed.</strong> The Service may not discover all accounts linked to your email — only those
+            detectable in your email history.</li>
+          <li><span class="rule-dot"></span><strong style="color:var(--text-primary);">False positives are
+              possible.</strong> A detected service may not always represent an active account.</li>
+          <li><span class="rule-dot"></span><strong style="color:var(--text-primary);">Breach data comes from third
+              parties.</strong> We use Have I Been Pwned (HIBP) and cannot guarantee the accuracy or completeness of
+            breach information.</li>
+          <li><span class="rule-dot"></span><strong style="color:var(--text-primary);">Security scores are indicative,
+              not authoritative.</strong> Your score is a calculated estimate based on available signals, not a
+            professional security audit.</li>
+        </ul>
+        <div class="alert-box warn">
+          <span class="alert-icon">⚠️</span>
+          <span>Do not make critical security decisions (e.g., whether an account is safe to ignore) based solely on
+            Footmarq data. Always verify important information independently.</span>
+        </div>
+      </section>
+
+      <!-- 9. Availability -->
+      <section class="terms-section" id="availability">
+        <div class="section-icon-title">
+          <div class="section-icon icon-teal">🌐</div>
+          <h2>9. Service Availability</h2>
+        </div>
+        <p>We strive to keep Footmarq available and reliable, but we make <strong style="color:var(--text-primary);">no
+            guarantee of uptime or continuous availability</strong>. The Service is provided free of charge and on an
+          "as available" basis.</p>
+        <ul class="rule-list">
+          <li><span class="rule-dot"></span>We may perform scheduled or emergency maintenance that results in temporary
+            downtime.</li>
+          <li><span class="rule-dot"></span>We may suspend or discontinue the Service at any time, with or without
+            notice, for any reason.</li>
+          <li><span class="rule-dot"></span>We are not liable for any loss or inconvenience caused by service
+            interruptions.</li>
+          <li><span class="rule-dot"></span>Gmail scan speed and accuracy depend on Google's API, which may be subject
+            to rate limits and quotas outside our control.</li>
+        </ul>
+      </section>
+
+      <!-- 10. Termination -->
+      <section class="terms-section" id="termination">
+        <div class="section-icon-title">
+          <div class="section-icon icon-red">⚡</div>
+          <h2>10. Termination</h2>
+        </div>
+        <p><strong style="color:var(--text-primary);">You may terminate your account</strong> at any time by navigating
+          to <strong style="color:var(--text-primary);">Settings → Privacy → Delete Account</strong>. This will
+          permanently and irreversibly delete all your data from our systems and revoke all Google tokens.</p>
+        <p><strong style="color:var(--text-primary);">We may terminate or suspend your account</strong> immediately,
+          without prior notice or liability, if:</p>
+        <ul class="rule-list">
+          <li><span class="rule-dot"></span>You breach any provision of these Terms.</li>
+          <li><span class="rule-dot"></span>We detect fraudulent, abusive, or illegal activity associated with your
+            account.</li>
+          <li><span class="rule-dot"></span>We are required to do so by law or a government authority.</li>
+          <li><span class="rule-dot"></span>Continued access would harm the security or integrity of the Service or
+            other users.</li>
+        </ul>
+        <p>Upon termination for any reason, all rights granted to you under these Terms immediately cease. Data deletion
+          in termination cases follows the process described in our <a href="/privacy"
+            style="color:var(--accent-light);">Privacy Policy</a>.</p>
+      </section>
+
+      <!-- 11. Disclaimer of Warranties -->
+      <section class="terms-section" id="disclaimer">
+        <div class="section-icon-title">
+          <div class="section-icon icon-amber">⚖️</div>
+          <h2>11. Disclaimer of Warranties</h2>
+        </div>
+        <p>The Service is provided on an <strong style="color:var(--text-primary);">"as is" and "as available"</strong>
+          basis, without any warranties of any kind, either express or implied.</p>
+        <div class="disclaimer-box">
+          <p>To the fullest extent permitted by applicable law, Footmarq expressly disclaims all warranties, including
+            but not limited to: implied warranties of merchantability, fitness for a particular purpose, and
+            non-infringement. We do not warrant that the Service will be uninterrupted, error-free, completely secure,
+            or free from viruses or other harmful components. We do not warrant the accuracy, completeness, or
+            reliability of any content obtained through the Service.</p>
+        </div>
+      </section>
+
+      <!-- 12. Limitation of Liability -->
+      <section class="terms-section" id="liability">
+        <div class="section-icon-title">
+          <div class="section-icon icon-red">🛡️</div>
+          <h2>12. Limitation of Liability</h2>
+        </div>
+        <p>To the fullest extent permitted by law, Footmarq and its operator (Shivam Kumar) shall not be liable for:</p>
+        <ul class="rule-list">
+          <li><span class="rule-dot"></span>Any <strong style="color:var(--text-primary);">indirect, incidental,
+              special, consequential, or punitive damages</strong> arising from your use of the Service.</li>
+          <li><span class="rule-dot"></span>Loss of data, profits, revenue, business, or goodwill resulting from use of
+            or inability to use the Service.</li>
+          <li><span class="rule-dot"></span>Damages resulting from actions or decisions you take based on information
+            provided by the Service.</li>
+          <li><span class="rule-dot"></span>Unauthorised access to or alteration of your data caused by a third-party
+            breach beyond our reasonable control.</li>
+        </ul>
+        <div class="alert-box danger">
+          <span class="alert-icon">⚠️</span>
+          <span>In all cases, our total liability to you for any claim arising out of or relating to these Terms or the
+            Service shall not exceed the amount you paid to us in the 12 months preceding the claim. Since the Service
+            is currently free, our maximum liability is <strong>$0</strong>.</span>
+        </div>
+      </section>
+
+      <!-- 13. Changes to Terms -->
+      <section class="terms-section" id="changes">
+        <div class="section-icon-title">
+          <div class="section-icon icon-purple">🔄</div>
+          <h2>13. Changes to These Terms</h2>
+        </div>
+        <p>We reserve the right to modify these Terms at any time. When we make material changes, we will:</p>
+        <ul class="rule-list">
+          <li><span class="rule-dot"></span>Update the <strong style="color:var(--text-primary);">"Effective
+              Date"</strong> at the top of this page.</li>
+          <li><span class="rule-dot"></span>Send an email notification to your registered address for significant
+            changes.</li>
+          <li><span class="rule-dot"></span>Display an in-app notice the next time you log in.</li>
+        </ul>
+        <p>Your continued use of the Service after changes are published constitutes your acceptance of the new Terms.
+          If you do not agree to the revised Terms, you must stop using the Service and delete your account.</p>
+      </section>
+
+      <!-- 14. Contact -->
+      <section class="terms-section" id="contact-terms">
+        <div class="section-icon-title">
+          <div class="section-icon icon-blue">📞</div>
+          <h2>14. Contact & Disputes</h2>
+        </div>
+        <p>For any questions about these Terms, legal notices, or dispute resolution, please contact us directly. We aim
+          to resolve all disputes informally and in good faith within <strong style="color:var(--text-primary);">30
+            days</strong>.</p>
+        <div class="contact-box">
+          <div class="contact-box-icon">✉️</div>
+          <div>
+            <h4>Legal Contact</h4>
+            <p>Email: <a href="mailto:kumarshivam51238@gmail.com">kumarshivam51238@gmail.com</a><br>
+              Subject line: <em>"Terms of Service — Footmarq"</em></p>
+          </div>
+        </div>
+        <p style="margin-top:16px;">These Terms are governed by the laws of India. Any disputes that cannot be resolved
+          informally will be subject to the exclusive jurisdiction of the courts of India.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="terms-footer">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="logo-mark" style="width:24px;height:24px;font-size:12px;">M</div>
+      <span>My_Login by Shivam ❤️ © 2026</span>
+    </div>
+    <div class="footer-links">
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Service</a>
+      <a href="/">Home</a>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const sections = document.querySelectorAll('.terms-section');
+      const tocLinks = document.querySelectorAll('.toc-link');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            tocLinks.forEach(link => link.classList.remove('active'));
+            const active = document.querySelector('.toc-link[href="#' + entry.target.id + '"]');
+            if (active) active.classList.add('active');
+          }
+        });
+      }, { rootMargin: '-20% 0px -70% 0px' });
+      sections.forEach(s => observer.observe(s));
+    });
+  </script>
+
+</body>
+
+</html>

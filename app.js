@@ -14,6 +14,7 @@ const emailRoutes = require('./src/routes/emailRoutes');
 const cleanupRoutes = require('./src/routes/cleanupRoutes');
 const notificationRoutes = require('./src/routes/notificationRoutes');
 const settingsRoutes = require('./src/routes/settingsRoutes');
+const contactRoutes = require('./src/routes/contactRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -60,6 +61,11 @@ app.use('/', emailRoutes);
 app.use('/', cleanupRoutes);
 app.use('/', notificationRoutes);
 app.use('/', settingsRoutes);
+app.use('/', contactRoutes);
+
+// ── Static Public Routes ─────────────────────────────────────
+app.get('/privacy', (req, res) => res.render('privacy'));
+app.get('/terms',   (req, res) => res.render('terms'));
 
 // ── SSL Configuration & HTTPS Server ──────────────────────────
 function getSSLCertificates() {

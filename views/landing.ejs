@@ -186,12 +186,206 @@
       <span style="color:var(--text-muted)">My_Login by Shivam ❤️ © 2026</span>
     </div>
     <div class="footer-links">
-      <a href="#">Privacy Policy</a>
-      <a href="#">Terms of Service</a>
-      <a href="#">Security</a>
-      <a href="#">Contact</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Service</a>
+      <a href="#" id="openContactPanel">Contact</a>
     </div>
   </footer>
+
+  <!-- Slide-over Contact Panel -->
+  <div id="contactPanelOverlay" class="contact-panel-overlay hidden"></div>
+  <div id="contactPanel" class="contact-panel hidden">
+    <div class="panel-header">
+      <h3>Contact Support</h3>
+      <button id="closeContactPanel" class="close-btn">&times;</button>
+    </div>
+    <div class="panel-body">
+      <p style="color:var(--text-muted); margin-bottom: 24px;">Got a question? Send us a message and we'll get back to you as soon as possible.</p>
+      
+      <form id="contactForm">
+        <div class="form-group">
+          <label>Name</label>
+          <input type="text" id="contactName" name="name" class="form-control" placeholder="Your Name" required>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="contactEmail" name="email" class="form-control" placeholder="Your Email" required>
+        </div>
+        <div class="form-group">
+          <label>Message</label>
+          <textarea id="contactMessage" name="message" class="form-control" rows="5" placeholder="How can we help?" required></textarea>
+        </div>
+        <button type="submit" id="contactSubmitBtn" class="btn btn-primary" style="width:100%; margin-top:16px;">
+          <span class="btn-text">Send Message</span>
+        </button>
+      </form>
+      
+      <div id="contactSuccess" class="hidden" style="margin-top: 24px; text-align:center; padding:16px; background:rgba(0,255,100,0.1); border-radius:12px; border:1px solid rgba(0,255,100,0.2);">
+        <div style="font-size:2rem; margin-bottom:8px;">✅</div>
+        <h4 style="color:var(--text-main);">Message Sent!</h4>
+        <p style="color:var(--text-muted); font-size:0.9rem;">We've received your message and will get back to you shortly.</p>
+      </div>
+      <div id="contactError" class="hidden" style="margin-top: 16px; color: #ff5555; text-align:center; font-size: 0.9rem;"></div>
+    </div>
+  </div>
+
+  <style>
+    /* Contact Panel Styles */
+    .contact-panel-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      z-index: 9998;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+    .contact-panel-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .contact-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 400px;
+      max-width: 100%;
+      background: var(--bg-surface);
+      border-left: 1px solid var(--border-color);
+      z-index: 9999;
+      transform: translateX(0);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+    }
+    .contact-panel.hidden {
+      transform: translateX(100%);
+    }
+    .panel-header {
+      padding: 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .panel-header h3 {
+      margin: 0;
+      font-size: 1.25rem;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .close-btn:hover {
+      color: var(--text-main);
+    }
+    .panel-body {
+      padding: 24px;
+      flex: 1;
+      overflow-y: auto;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+    }
+    .form-control {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      color: var(--text-main);
+      font-family: inherit;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--accent-light);
+      background: rgba(255,255,255,0.1);
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const openBtn = document.getElementById('openContactPanel');
+      const closeBtn = document.getElementById('closeContactPanel');
+      const panel = document.getElementById('contactPanel');
+      const overlay = document.getElementById('contactPanelOverlay');
+      const form = document.getElementById('contactForm');
+      const successDiv = document.getElementById('contactSuccess');
+      const errorDiv = document.getElementById('contactError');
+      const submitBtn = document.getElementById('contactSubmitBtn');
+
+      if(!openBtn || !panel) return;
+
+      function openPanel(e) {
+        if(e) e.preventDefault();
+        panel.classList.remove('hidden');
+        overlay.classList.remove('hidden');
+        // Reset form state
+        form.reset();
+        form.style.display = 'block';
+        successDiv.classList.add('hidden');
+        errorDiv.classList.add('hidden');
+      }
+
+      function closePanel() {
+        panel.classList.add('hidden');
+        overlay.classList.add('hidden');
+      }
+
+      openBtn.addEventListener('click', openPanel);
+      closeBtn.addEventListener('click', closePanel);
+      overlay.addEventListener('click', closePanel);
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorDiv.classList.add('hidden');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Sending...';
+
+        const data = {
+          name: document.getElementById('contactName').value,
+          email: document.getElementById('contactEmail').value,
+          message: document.getElementById('contactMessage').value
+        };
+
+        try {
+          const res = await fetch('/api/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+          const result = await res.json();
+          
+          if(result.success) {
+            form.style.display = 'none';
+            successDiv.classList.remove('hidden');
+            setTimeout(closePanel, 3000);
+          } else {
+            errorDiv.textContent = result.message || 'An error occurred.';
+            errorDiv.classList.remove('hidden');
+          }
+        } catch(err) {
+          errorDiv.textContent = 'Network error. Please try again later.';
+          errorDiv.classList.remove('hidden');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<span class="btn-text">Send Message</span>';
+        }
+      });
+    });
+  </script>
 
   <script src="/js/app.js"></script>
 </body>

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Footmarq Privacy Policy — Learn exactly what data we collect, how we use it, and your rights to control it.">
+  <title>Privacy Policy — Footmarq</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .privacy-page { min-height: 100vh; background: var(--bg-base); }
+    .privacy-nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,13,20,0.85);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 60px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .privacy-nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .privacy-nav-brand span { font-size: 1rem; font-weight: 700; color: var(--text-primary); }
+    .privacy-nav-brand span em { color: var(--accent-light); font-style: normal; }
+    .privacy-nav-back { display: inline-flex; align-items: center; gap: 6px; color: var(--text-secondary); font-size: 0.875rem; transition: color 200ms; text-decoration: none; }
+    .privacy-nav-back:hover { color: var(--accent-light); }
+    .privacy-hero { padding: 80px 60px 60px; text-align: center; position: relative; overflow: hidden; }
+    .privacy-hero::before { content: ''; position: absolute; top: -120px; left: 50%; transform: translateX(-50%); width: 700px; height: 500px; background: radial-gradient(ellipse, rgba(99,102,241,0.12) 0%, transparent 70%); pointer-events: none; }
+    .privacy-hero-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 99px; padding: 6px 16px; font-size: 0.78rem; font-weight: 600; color: #22c55e; margin-bottom: 24px; }
+    .privacy-hero h1 { font-size: 3rem; font-weight: 900; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 18px; background: linear-gradient(135deg, #fff 0%, var(--accent-light) 60%, #22d3ee 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .privacy-hero p { font-size: 1.05rem; color: var(--text-secondary); max-width: 560px; margin: 0 auto; line-height: 1.7; }
+    .privacy-meta { display: flex; align-items: center; justify-content: center; gap: 28px; margin-top: 32px; font-size: 0.8rem; color: var(--text-muted); }
+    .privacy-layout { max-width: 1100px; margin: 0 auto; padding: 0 60px 80px; display: grid; grid-template-columns: 220px 1fr; gap: 48px; align-items: start; }
+    .privacy-toc { position: sticky; top: 88px; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 24px; }
+    .privacy-toc h4 { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 16px; }
+    .toc-list { display: flex; flex-direction: column; gap: 4px; }
+    .toc-link { display: block; padding: 7px 10px; border-radius: var(--radius-sm); font-size: 0.8rem; color: var(--text-secondary); transition: all 200ms; text-decoration: none; }
+    .toc-link:hover { background: var(--bg-hover); color: var(--accent-light); }
+    .toc-link.active { background: var(--accent-dim); color: var(--accent-light); font-weight: 500; }
+    .privacy-content { min-width: 0; }
+    .privacy-section { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 36px; margin-bottom: 24px; scroll-margin-top: 88px; transition: border-color 200ms; }
+    .privacy-section:hover { border-color: rgba(99,102,241,0.2); }
+    .section-icon-title { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+    .section-icon { width: 44px; height: 44px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+    .icon-purple { background: rgba(99,102,241,0.15); }
+    .icon-green  { background: rgba(34,197,94,0.12); }
+    .icon-blue   { background: rgba(34,211,238,0.12); }
+    .icon-amber  { background: rgba(245,158,11,0.12); }
+    .icon-pink   { background: rgba(236,72,153,0.12); }
+    .privacy-section h2 { font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+    .privacy-section p { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.75; margin-bottom: 12px; }
+    .privacy-section p:last-child { margin-bottom: 0; }
+    .data-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.85rem; }
+    .data-table th { text-align: left; padding: 10px 14px; background: var(--bg-elevated); color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+    .data-table th:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+    .data-table th:last-child  { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+    .data-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table td strong { color: var(--text-primary); font-weight: 500; }
+    .check-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
+    .check-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 0.875rem; color: var(--text-secondary); line-height: 1.55; }
+    .check-list .yes { color: #22c55e; font-size: 1rem; margin-top: 1px; }
+    .check-list .no  { color: #ef4444; font-size: 1rem; margin-top: 1px; }
+    .rights-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+    .right-card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; transition: border-color 200ms; }
+    .right-card:hover { border-color: rgba(99,102,241,0.3); }
+    .right-card h4 { font-size: 0.875rem; color: var(--text-primary); margin-bottom: 6px; }
+    .right-card p { font-size: 0.8rem; margin-bottom: 0; }
+    .alert-box { display: flex; align-items: flex-start; gap: 12px; background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.25); border-radius: var(--radius); padding: 16px; margin: 16px 0; font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; }
+    .alert-icon { font-size: 1.1rem; margin-top: 1px; flex-shrink: 0; }
+    .contact-box { background: linear-gradient(135deg, var(--bg-elevated) 0%, rgba(99,102,241,0.08) 100%); border: 1px solid rgba(99,102,241,0.25); border-radius: var(--radius); padding: 24px; margin-top: 16px; display: flex; align-items: center; gap: 16px; }
+    .contact-box-icon { font-size: 2rem; }
+    .contact-box h4 { font-size: 0.9rem; color: var(--text-primary); margin-bottom: 4px; }
+    .contact-box p { font-size: 0.85rem; margin: 0; }
+    .contact-box a { color: var(--accent-light); text-decoration: underline; }
+    .privacy-footer { border-top: 1px solid var(--border); padding: 32px 60px; display: flex; align-items: center; justify-content: space-between; color: var(--text-muted); font-size: 0.825rem; }
+    .footer-links { display: flex; gap: 20px; }
+    .footer-links a { color: var(--text-muted); transition: color 200ms; }
+    .footer-links a:hover { color: var(--text-secondary); }
+    @media (max-width: 900px) {
+      .privacy-nav { padding: 0 24px; }
+      .privacy-hero { padding: 60px 24px 40px; }
+      .privacy-hero h1 { font-size: 2.2rem; }
+      .privacy-layout { grid-template-columns: 1fr; padding: 0 24px 60px; }
+      .privacy-toc { position: static; }
+      .rights-grid { grid-template-columns: 1fr; }
+      .privacy-footer { padding: 24px; flex-direction: column; gap: 16px; }
+    }
+  </style>
+</head>
+
+<body class="privacy-page">
+
+  <nav class="privacy-nav">
+    <a href="/" class="privacy-nav-brand">
+      <div class="logo-mark" style="width:32px;height:32px;font-size:14px;">M</div>
+      <span>My<em>_Login</em></span>
+    </a>
+    <a href="/" class="privacy-nav-back">← Back to Home</a>
+  </nav>
+
+  <header class="privacy-hero">
+    <div class="privacy-hero-badge">🔒 Privacy First</div>
+    <h1>Privacy Policy</h1>
+    <p>We believe privacy is a right, not a feature. Here is exactly what data we collect, why we collect it, and how you can control it — in plain language.</p>
+    <div class="privacy-meta">
+      <span>📅 Last updated: October 2026</span>
+      <span>⏱️ ~5 min read</span>
+      <span>🏠 Applies to: footmarq.app</span>
+    </div>
+  </header>
+
+  <div class="privacy-layout">
+    <aside class="privacy-toc">
+      <h4>Contents</h4>
+      <nav class="toc-list" id="tocList">
+        <a href="#who-we-are"      class="toc-link">1. Who We Are</a>
+        <a href="#what-we-collect" class="toc-link">2. What We Collect</a>
+        <a href="#never-collected" class="toc-link">3. What We Never Collect</a>
+        <a href="#gmail-access"    class="toc-link">4. Gmail & Google OAuth</a>
+        <a href="#how-we-use"      class="toc-link">5. How We Use Data</a>
+        <a href="#data-security"   class="toc-link">6. Data Security</a>
+        <a href="#your-rights"     class="toc-link">7. Your Rights</a>
+        <a href="#cookies"         class="toc-link">8. Cookies & Sessions</a>
+        <a href="#third-parties"   class="toc-link">9. Third-Party Services</a>
+        <a href="#contact-privacy" class="toc-link">10. Contact Us</a>
+      </nav>
+    </aside>
+
+    <main class="privacy-content">
+
+      <section class="privacy-section" id="who-we-are">
+        <div class="section-icon-title">
+          <div class="section-icon icon-purple">🏢</div>
+          <h2>1. Who We Are</h2>
+        </div>
+        <p><strong style="color:var(--text-primary);">Footmarq</strong> (operating as <strong style="color:var(--text-primary);">My_Login</strong>) is a digital identity hub that helps you discover, monitor, and clean up online accounts linked to your email addresses. This service is built and operated by Shivam Kumar.</p>
+        <p>This Privacy Policy applies to all services at <strong style="color:var(--text-primary);">footmarq.app</strong> and describes how we collect, use, store, and protect your personal information.</p>
+        <div class="alert-box">
+          <span class="alert-icon">📋</span>
+          <span>By creating an account or connecting your Gmail, you agree to the practices described in this policy. If you disagree, please do not use the service.</span>
+        </div>
+      </section>
+
+      <section class="privacy-section" id="what-we-collect">
+        <div class="section-icon-title">
+          <div class="section-icon icon-blue">📥</div>
+          <h2>2. What Data We Collect</h2>
+        </div>
+        <p>We only collect the minimum data needed to provide the service. Here is a complete, transparent breakdown:</p>
+        <table class="data-table">
+          <thead>
+            <tr><th>Category</th><th>What We Store</th><th>Purpose</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Profile</strong></td><td>Name, primary email, profile picture, account creation date</td><td>Identify your account</td></tr>
+            <tr><td><strong>Connected Emails</strong></td><td>Email addresses you add, OAuth scopes granted, connection date</td><td>Enable Gmail scanning</td></tr>
+            <tr><td><strong>Gmail Metadata</strong></td><td>Sender email, sender name, email subject, received date</td><td>Discover linked services</td></tr>
+            <tr><td><strong>Discovered Accounts</strong></td><td>Service name, event type (signup/login), detected date</td><td>Build your account dashboard</td></tr>
+            <tr><td><strong>Breach Data</strong></td><td>Which of your emails appeared in known breach databases</td><td>Alert you to compromised accounts</td></tr>
+            <tr><td><strong>Security Events</strong></td><td>Sign-in timestamps, device type, IP address</td><td>Protect against unauthorised access</td></tr>
+            <tr><td><strong>Scan History</strong></td><td>Scan timestamps, emails processed count (auto-purged after 30 days)</td><td>Track progress, allow resuming</td></tr>
+            <tr><td><strong>OAuth Tokens</strong></td><td>Encrypted Gmail access and refresh tokens</td><td>Authenticate Gmail API calls</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="privacy-section" id="never-collected">
+        <div class="section-icon-title">
+          <div class="section-icon icon-green">🚫</div>
+          <h2>3. What We Never Collect</h2>
+        </div>
+        <p>We are explicit about what we <strong style="color:var(--text-primary);">never</strong> store. These are firm, technical rules — not just policy statements:</p>
+        <ul class="check-list">
+          <li><span class="no">✕</span> <strong style="color:var(--text-primary);">Email body content</strong> — We never read or store the body/text of any email, ever.</li>
+          <li><span class="no">✕</span> <strong style="color:var(--text-primary);">Email attachments</strong> — Files attached to your emails are never accessed.</li>
+          <li><span class="no">✕</span> <strong style="color:var(--text-primary);">Email thread content</strong> — Full conversation threads are not read or stored.</li>
+          <li><span class="no">✕</span> <strong style="color:var(--text-primary);">CC / BCC headers</strong> — We only read the primary sender and recipient.</li>
+          <li><span class="no">✕</span> <strong style="color:var(--text-primary);">Gmail labels or categories</strong> — Your inbox organisation stays private.</li>
+          <li><span class="no">✕</span> <strong style="color:var(--text-primary);">Passwords</strong> — We never store or request your passwords for third-party services.</li>
+          <li><span class="no">✕</span> <strong style="color:var(--text-primary);">Data sold to third parties</strong> — Your data is never sold, rented, or traded.</li>
+          <li><span class="no">✕</span> <strong style="color:var(--text-primary);">Advertising profiles</strong> — We build no advertising or tracking profiles on you.</li>
+        </ul>
+      </section>
+
+      <section class="privacy-section" id="gmail-access">
+        <div class="section-icon-title">
+          <div class="section-icon icon-amber">🔑</div>
+          <h2>4. Gmail & Google OAuth Access</h2>
+        </div>
+        <p>This is the most critical section for users who connect Gmail. We follow Google's strictest data handling requirements.</p>
+        <ul class="check-list">
+          <li><span class="yes">✓</span> We request <strong style="color:var(--text-primary);">gmail.readonly</strong> scope only — we can <strong style="color:var(--text-primary);">only read</strong> email metadata, nothing else.</li>
+          <li><span class="yes">✓</span> Gmail access is a <strong style="color:var(--text-primary);">separate, deliberate step</strong> — you can log in with Google without ever granting Gmail access.</li>
+          <li><span class="yes">✓</span> OAuth tokens are encrypted using <strong style="color:var(--text-primary);">AES-256-GCM</strong> before being stored in our database.</li>
+          <li><span class="yes">✓</span> We use Gmail's <strong style="color:var(--text-primary);">metadata-only</strong> API format — the most privacy-preserving option available.</li>
+          <li><span class="no">✕</span> We <strong style="color:var(--text-primary);">cannot</strong> send emails on your behalf.</li>
+          <li><span class="no">✕</span> We <strong style="color:var(--text-primary);">cannot</strong> delete your emails.</li>
+          <li><span class="no">✕</span> We <strong style="color:var(--text-primary);">cannot</strong> manage your Gmail labels or filters.</li>
+        </ul>
+        <div class="alert-box">
+          <span class="alert-icon">🔌</span>
+          <span>You can revoke Gmail access at any time from <strong>Settings → Privacy</strong>. We immediately call Google's OAuth revocation endpoint and delete all tokens. Your discovered accounts are retained unless you explicitly delete them.</span>
+        </div>
+      </section>
+
+      <section class="privacy-section" id="how-we-use">
+        <div class="section-icon-title">
+          <div class="section-icon icon-purple">⚙️</div>
+          <h2>5. How We Use Your Data</h2>
+        </div>
+        <p>We use your data for one purpose only: to provide the Footmarq service to you.</p>
+        <ul class="check-list">
+          <li><span class="yes">✓</span> To <strong style="color:var(--text-primary);">discover accounts</strong> linked to your connected email addresses by analysing email metadata.</li>
+          <li><span class="yes">✓</span> To <strong style="color:var(--text-primary);">check your emails</strong> against the Have I Been Pwned breach database and alert you to compromises.</li>
+          <li><span class="yes">✓</span> To <strong style="color:var(--text-primary);">calculate your security score</strong> based on breach status, risk levels, and 2FA gaps.</li>
+          <li><span class="yes">✓</span> To <strong style="color:var(--text-primary);">send notifications</strong> (email only) about scan completion, new breaches, and security alerts.</li>
+          <li><span class="yes">✓</span> To <strong style="color:var(--text-primary);">authenticate your sessions</strong> and protect your account from unauthorised access.</li>
+        </ul>
+        <p>We do not use your data for analytics, A/B testing, marketing, or any purpose outside of directly serving you.</p>
+      </section>
+
+      <section class="privacy-section" id="data-security">
+        <div class="section-icon-title">
+          <div class="section-icon icon-green">🔒</div>
+          <h2>6. Data Security</h2>
+        </div>
+        <p>We implement industry-standard protections across all layers of our infrastructure:</p>
+        <ul class="check-list">
+          <li><span class="yes">✓</span> All traffic is served over <strong style="color:var(--text-primary);">HTTPS/TLS</strong> with HSTS headers enforced.</li>
+          <li><span class="yes">✓</span> OAuth tokens are encrypted at rest using <strong style="color:var(--text-primary);">AES-256-GCM</strong> with a server-side encryption key.</li>
+          <li><span class="yes">✓</span> Passwords are hashed using <strong style="color:var(--text-primary);">bcrypt</strong> — we never store plaintext passwords.</li>
+          <li><span class="yes">✓</span> Sessions use <strong style="color:var(--text-primary);">secure, HTTP-only cookies</strong> — inaccessible to client-side JavaScript.</li>
+          <li><span class="yes">✓</span> Scan logs are <strong style="color:var(--text-primary);">automatically purged after 30 days</strong>.</li>
+          <li><span class="yes">✓</span> All OAuth flows use <strong style="color:var(--text-primary);">CSRF state tokens</strong> to prevent OAuth hijacking attacks.</li>
+        </ul>
+        <div class="alert-box">
+          <span class="alert-icon">⚠️</span>
+          <span>If you discover a security vulnerability, please contact us at <strong>kumarshivam51238@gmail.com</strong> before public disclosure. We take all reports seriously and will respond within 48 hours.</span>
+        </div>
+      </section>
+
+      <section class="privacy-section" id="your-rights">
+        <div class="section-icon-title">
+          <div class="section-icon icon-pink">⚖️</div>
+          <h2>7. Your Rights (GDPR Art. 15, 17, 20)</h2>
+        </div>
+        <p>You have the following rights — all built directly into the Footmarq platform under <strong style="color:var(--text-primary);">Settings → Privacy</strong>:</p>
+        <div class="rights-grid">
+          <div class="right-card">
+            <h4>📤 Export Your Data</h4>
+            <p>Download a complete ZIP archive of everything we store — profile, emails, accounts, events, and breaches.</p>
+          </div>
+          <div class="right-card">
+            <h4>🗑️ Delete Scan Logs</h4>
+            <p>Purge all scan history and email events while keeping your discovered accounts and profile intact.</p>
+          </div>
+          <div class="right-card">
+            <h4>🔌 Revoke Gmail Access</h4>
+            <p>Disconnect Gmail at any time. Tokens are deleted and Google is notified immediately.</p>
+          </div>
+          <div class="right-card">
+            <h4>💀 Delete Account</h4>
+            <p>Permanently delete your account and all associated data. All Google tokens are revoked first.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="privacy-section" id="cookies">
+        <div class="section-icon-title">
+          <div class="section-icon icon-amber">🍪</div>
+          <h2>8. Cookies & Sessions</h2>
+        </div>
+        <p>We use cookies only for essential authentication. We use no tracking, advertising, or analytics cookies.</p>
+        <table class="data-table">
+          <thead>
+            <tr><th>Cookie</th><th>Purpose</th><th>Duration</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>session_token</strong></td><td>Authenticates your login session. HTTP-only, secure, cannot be read by JavaScript.</td><td>Until logout or expiry</td></tr>
+            <tr><td><strong>csrf_token</strong></td><td>Prevents cross-site request forgery attacks on OAuth flows.</td><td>Per-request</td></tr>
+          </tbody>
+        </table>
+        <p>We do <strong style="color:var(--text-primary);">not</strong> use Google Analytics, Facebook Pixel, Hotjar, or any third-party tracking scripts.</p>
+      </section>
+
+      <section class="privacy-section" id="third-parties">
+        <div class="section-icon-title">
+          <div class="section-icon icon-blue">🔗</div>
+          <h2>9. Third-Party Services</h2>
+        </div>
+        <p>Footmarq uses the following third-party services strictly to operate the platform. We share no data with any other parties.</p>
+        <table class="data-table">
+          <thead>
+            <tr><th>Service</th><th>Purpose</th><th>Data Shared</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Google OAuth & Gmail API</strong></td><td>Authentication and reading Gmail metadata for account discovery</td><td>Only what you explicitly authorise</td></tr>
+            <tr><td><strong>Have I Been Pwned (HIBP)</strong></td><td>Checking if your emails appear in known data breaches</td><td>Your email address (hashed, per HIBP protocol)</td></tr>
+            <tr><td><strong>MongoDB</strong></td><td>Encrypted storage of all application data</td><td>All data described in Section 2</td></tr>
+            <tr><td><strong>Gmail SMTP (Nodemailer)</strong></td><td>Sending transactional emails — scan summaries, breach alerts, exports</td><td>Your email address and notification content only</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="privacy-section" id="contact-privacy">
+        <div class="section-icon-title">
+          <div class="section-icon icon-purple">📞</div>
+          <h2>10. Contact & Privacy Requests</h2>
+        </div>
+        <p>For privacy-related questions, data requests, or concerns, contact us directly. We aim to respond within <strong style="color:var(--text-primary);">48 hours</strong>.</p>
+        <div class="contact-box">
+          <div class="contact-box-icon">✉️</div>
+          <div>
+            <h4>Privacy Contact</h4>
+            <p>Email: <a href="mailto:kumarshivam51238@gmail.com">kumarshivam51238@gmail.com</a><br>
+            Subject line: <em>"Privacy Request — Footmarq"</em></p>
+          </div>
+        </div>
+        <p style="margin-top:16px;">You may also exercise your rights directly at <strong style="color:var(--text-primary);">Settings → Privacy</strong> without needing to contact us.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="privacy-footer">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="logo-mark" style="width:24px;height:24px;font-size:12px;">M</div>
+      <span>My_Login by Shivam ❤️ © 2026</span>
+    </div>
+    <div class="footer-links">
+      <a href="/privacy">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="/">Home</a>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const sections = document.querySelectorAll('.privacy-section');
+      const tocLinks = document.querySelectorAll('.toc-link');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            tocLinks.forEach(link => link.classList.remove('active'));
+            const active = document.querySelector('.toc-link[href="#' + entry.target.id + '"]');
+            if (active) active.classList.add('active');
+          }
+        });
+      }, { rootMargin: '-20% 0px -70% 0px' });
+      sections.forEach(s => observer.observe(s));
+    });
+  </script>
+
+</body>
+</html>

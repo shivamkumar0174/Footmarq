@@ -7,6 +7,166 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
+  <style>
+    /* ── Privacy Tab Components ──────────────────────────────── */
+    .privacy-flash {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 16px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      animation: slideDown 0.25s ease;
+    }
+    .privacy-flash-success {
+      background: rgba(34,197,94,0.12);
+      border: 1px solid rgba(34,197,94,0.3);
+      color: var(--risk-low);
+    }
+    .privacy-flash-danger {
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: var(--risk-critical);
+    }
+    .flash-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      color: inherit;
+      opacity: 0.7;
+      padding: 0 0 0 12px;
+    }
+    .flash-close:hover { opacity: 1; }
+
+    .privacy-deletion-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      animation: slideDown 0.25s ease;
+    }
+
+    .privacy-pref-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .privacy-pref-row:last-child { border-bottom: none; }
+
+    .privacy-toggle {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .privacy-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .toggle-track::after {
+      content: '';
+      position: absolute;
+      left: 3px;
+      top: 3px;
+      width: 16px;
+      height: 16px;
+      background: var(--text-muted);
+      border-radius: 50%;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .privacy-toggle input:checked + .toggle-track {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .privacy-toggle input:checked + .toggle-track::after {
+      transform: translateX(20px);
+      background: white;
+    }
+
+    .gmail-disconnect-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 10px;
+    }
+    .gmail-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .privacy-empty-state {
+      padding: 20px;
+      text-align: center;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+
+    /* Modal */
+    .privacy-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.2s ease;
+    }
+    .privacy-modal-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+      animation: scaleIn 0.2s ease;
+    }
+    @keyframes slideDown  { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:none; } }
+    @keyframes scaleIn    { from { opacity:0; transform:scale(0.95); } to { opacity:1; transform:none; } }
+    @keyframes fadeIn     { from { opacity:0; } to { opacity:1; } }
+  </style>
 </head>
 <body>
 <div class="app-shell">
@@ -43,67 +203,128 @@
         <!-- Settings Panel -->
         <div class="settings-panel">
 
-          <% if (tab === 'profile') { %>
-            <div class="settings-section">
-              <h3>Profile Information</h3>
-              <div class="profile-avatar-row">
-                <div class="profile-avatar-large"><%= user.avatar %></div>
-                <div>
-                  <div style="font-size:0.9rem;font-weight:600;color:var(--text-primary)"><%= user.name %></div>
-                  <div style="font-size:0.8rem;color:var(--text-muted)">Member since <%= user.joinedDate %></div>
-                  <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="showToast('Avatar upload coming soon','info')">Change Avatar</button>
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Full Name</label>
-                <input class="form-input" type="text" value="<%= user.name %>" readonly>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Primary Email</label>
-                <input class="form-input" type="email" value="<%= user.email %>" readonly>
-              </div>
-              <button class="btn btn-primary btn-sm" onclick="showToast('Profile saved','success')">Save Changes</button>
+          <%# ── Global Flash Banners ──────────────────────────── %>
+          <% const msgMap = {
+            profile_updated:    { icon:'✅', text:'Profile information updated successfully.', cls:'success' },
+            password_updated:   { icon:'🔒', text:'Password changed successfully.', cls:'success' },
+            '2fa_enabled':      { icon:'🛡️', text:'Two-Factor Authentication enabled.', cls:'success' },
+            '2fa_disabled':     { icon:'⚠️', text:'Two-Factor Authentication disabled.', cls:'warning' },
+            export_sent:        { icon:'📥', text:'Your data export is on its way — check your email inbox.', cls:'success' },
+            gmail_disconnected: { icon:'🔌', text:'Gmail access has been fully disconnected.', cls:'success' },
+            deletion_scheduled: { icon:'⏳', text:'Account deletion has been scheduled. You have 30 days to cancel.', cls:'danger' },
+            deletion_cancelled: { icon:'✅', text:'Account deletion cancelled. Your account is safe.', cls:'success' },
+            prefs_saved:        { icon:'✅', text:'Privacy preferences saved.', cls:'success' },
+          };
+          const errMap = {
+            profile_failed:           'Failed to update profile. Please try again.',
+            email_in_use:             'That email address is already in use by another account.',
+            password_short:           'New password must be at least 6 characters long.',
+            password_mismatch:        'New password and confirmation do not match.',
+            invalid_current_password: 'Current password is incorrect.',
+            password_failed:          'Failed to update password. Please try again.',
+            '2fa_failed':             'Failed to update 2FA settings. Please try again.',
+            export_failed:            'Failed to generate export. Please try again.',
+            disconnect_failed:        'Failed to disconnect Gmail. Please try again.',
+            delete_failed:            'Failed to schedule deletion. Please try again.',
+            cancel_failed:            'Failed to cancel deletion. Please try again.',
+            prefs_failed:             'Failed to save preferences. Please try again.'
+          };
+          %>
+          <% if (flashMsg && msgMap[flashMsg]) { %>
+            <div class="privacy-flash privacy-flash-<%= msgMap[flashMsg].cls %>" id="privacyFlash">
+              <span><%= msgMap[flashMsg].icon %> <%= msgMap[flashMsg].text %></span>
+              <button onclick="document.getElementById('privacyFlash').remove()" class="flash-close">✕</button>
             </div>
+          <% } %>
+          <% if (flashErr && errMap[flashErr]) { %>
+            <div class="privacy-flash privacy-flash-danger" id="privacyFlashErr">
+              <span>❌ <%= errMap[flashErr] %></span>
+              <button onclick="document.getElementById('privacyFlashErr').remove()" class="flash-close">✕</button>
+            </div>
+          <% } %>
+
+          <% if (tab === 'profile') { %>
+            <form action="/settings/profile" method="POST">
+              <div class="settings-section">
+                <h3>Profile Information</h3>
+                <div class="profile-avatar-row">
+                  <div class="profile-avatar-large"><%= user.avatar %></div>
+                  <div>
+                    <div style="font-size:0.9rem;font-weight:600;color:var(--text-primary)"><%= user.name %></div>
+                    <div style="font-size:0.8rem;color:var(--text-muted)">Member since <%= user.joinedDate %></div>
+                    <button type="button" class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="showToast('Avatar upload coming soon','info')">Change Avatar</button>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Full Name</label>
+                  <input class="form-input" type="text" name="name" value="<%= user.name %>" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Primary Email</label>
+                  <input class="form-input" type="email" name="email" value="<%= user.email %>" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
+              </div>
+            </form>
 
             <div class="divider"></div>
             <div class="settings-section">
               <h3>Plan</h3>
               <div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius);padding:16px">
                 <div>
-                  <div style="font-size:0.9rem;font-weight:600;color:var(--text-primary)">Free Plan</div>
+                  <div style="font-size:0.9rem;font-weight:600;color:var(--text-primary)"><%= user.plan || 'Free' %> Plan</div>
                   <div style="font-size:0.8rem;color:var(--text-muted)">Full account discovery · 1 email · Weekly breach scans</div>
                 </div>
-                <button class="btn btn-primary btn-sm" onclick="showToast('Pro plan coming soon!','info')">Upgrade to Pro</button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="showToast('Pro plan coming soon!','info')">Upgrade to Pro</button>
               </div>
             </div>
 
           <% } else if (tab === 'security') { %>
-            <div class="settings-section">
-              <h3>Change Password</h3>
-              <div class="form-group">
-                <label class="form-label">Current Password</label>
-                <input class="form-input" type="password" placeholder="••••••••">
+            <form action="/settings/security/password" method="POST">
+              <div class="settings-section">
+                <h3>Change Password</h3>
+                <% if (user.password) { %>
+                  <div class="form-group">
+                    <label class="form-label">Current Password</label>
+                    <input class="form-input" type="password" name="currentPassword" placeholder="••••••••" required>
+                  </div>
+                <% } else { %>
+                  <div style="font-size:0.85rem;color:var(--text-muted);margin-bottom:12px;background:var(--bg-elevated);padding:10px 14px;border-radius:6px;border:1px solid var(--border)">
+                    ℹ️ You currently sign in with <%= user.authProvider || 'Google' %>. Set a password below to enable password login.
+                  </div>
+                <% } %>
+                <div class="form-group">
+                  <label class="form-label">New Password</label>
+                  <input class="form-input" type="password" name="newPassword" placeholder="Min 6 characters" required minlength="6">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Confirm New Password</label>
+                  <input class="form-input" type="password" name="confirmPassword" placeholder="Repeat new password" required minlength="6">
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm">Update Password</button>
               </div>
-              <div class="form-group">
-                <label class="form-label">New Password</label>
-                <input class="form-input" type="password" placeholder="Min 8 chars, 1 uppercase, 1 number">
-              </div>
-              <div class="form-group">
-                <label class="form-label">Confirm New Password</label>
-                <input class="form-input" type="password" placeholder="Repeat new password">
-              </div>
-              <button class="btn btn-primary btn-sm" onclick="showToast('Password updated','success')">Update Password</button>
-            </div>
+            </form>
 
             <div class="divider"></div>
             <div class="settings-section">
               <h3>Two-Factor Authentication</h3>
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
                 <div>
-                  <div style="font-size:0.875rem;font-weight:600;color:var(--text-primary)">Authenticator App (TOTP)</div>
-                  <div style="font-size:0.8rem;color:var(--text-muted)">Use Google Authenticator or Authy</div>
+                  <div style="font-size:0.875rem;font-weight:600;color:var(--text-primary);display:flex;align-items:center;gap:8px">
+                    <span>Authenticator App (TOTP / Email OTP)</span>
+                    <% if (user.settings && user.settings.twoFactorEnabled) { %>
+                      <span style="font-size:0.75rem;padding:2px 8px;border-radius:12px;background:rgba(34,197,94,0.15);color:#22c55e;font-weight:600">Enabled</span>
+                    <% } else { %>
+                      <span style="font-size:0.75rem;padding:2px 8px;border-radius:12px;background:rgba(234,179,8,0.15);color:#eab308;font-weight:600">Disabled</span>
+                    <% } %>
+                  </div>
+                  <div style="font-size:0.8rem;color:var(--text-muted)">Require login verification security code for your account</div>
                 </div>
-                <button class="btn btn-primary btn-sm" onclick="showToast('TOTP setup coming in backend phase','info')">Enable 2FA</button>
+                <form action="/settings/security/2fa/toggle" method="POST" style="margin:0">
+                  <button type="submit" class="btn <%= (user.settings && user.settings.twoFactorEnabled) ? 'btn-ghost' : 'btn-primary' %> btn-sm">
+                    <%= (user.settings && user.settings.twoFactorEnabled) ? 'Disable 2FA' : 'Enable 2FA' %>
+                  </button>
+                </form>
               </div>
             </div>
 
@@ -135,46 +356,205 @@
           <% } else if (tab === 'sessions') { %>
             <div class="settings-section">
               <h3>Active Sessions</h3>
-              <% const sessions = [
-                {device:'Chrome on macOS', ip:'182.64.xx.xx', location:'Mumbai, India', current:true, time:'Now'},
-                {device:'Firefox on Windows', ip:'103.28.xx.xx', location:'Delhi, India', current:false, time:'2 days ago'},
-                {device:'Safari on iPhone', ip:'45.91.xx.xx', location:'Bangalore, India', current:false, time:'5 days ago'},
-              ]; %>
-              <% sessions.forEach(function(s) { %>
-                <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px">
-                  <div>
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-                      <span style="font-size:0.875rem;font-weight:600;color:var(--text-primary)"><%= s.device %></span>
-                      <% if (s.current) { %><span style="background:rgba(34,197,94,0.15);color:var(--risk-low);font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:99px">Current</span><% } %>
-                    </div>
-                    <div style="font-size:0.78rem;color:var(--text-muted)"><%= s.ip %> · <%= s.location %> · <%= s.time %></div>
-                  </div>
-                  <% if (!s.current) { %>
-                    <button class="btn btn-danger btn-sm" onclick="showToast('Session terminated','success')">Terminate</button>
-                  <% } %>
+              <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:16px">
+                These are the devices currently signed into your account. Terminate any session you don't recognise.
+              </p>
+              <% if (!sessions || sessions.length === 0) { %>
+                <div style="text-align:center;padding:32px;color:var(--text-muted);font-size:0.9rem">
+                  💻 No active sessions found. Log in again to see your session here.
                 </div>
-              <% }) %>
-              <button class="btn btn-danger" style="margin-top:8px" onclick="showToast('All other sessions terminated','success')">Terminate All Other Sessions</button>
+              <% } else { %>
+                <% sessions.forEach(function(s) { %>
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--bg-elevated);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:8px">
+                    <div>
+                      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+                        <span style="font-size:0.875rem;font-weight:600;color:var(--text-primary)"><%= s.device %></span>
+                        <% if (s.current) { %><span style="background:rgba(34,197,94,0.15);color:var(--risk-low);font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:99px">Current</span><% } %>
+                      </div>
+                      <div style="font-size:0.78rem;color:var(--text-muted)"><%= s.ip %> · <%= s.location %> · <%= s.time %></div>
+                    </div>
+                    <% if (!s.current) { %>
+                      <form method="POST" action="/settings/sessions/<%= s.id %>/terminate" style="margin:0">
+                        <button type="submit" class="btn btn-danger btn-sm">Terminate</button>
+                      </form>
+                    <% } %>
+                  </div>
+                <% }) %>
+                <% const hasOthers = sessions.some(function(s){ return !s.current; }); %>
+                <% if (hasOthers) { %>
+                  <form method="POST" action="/settings/sessions/terminate-all" style="margin-top:8px">
+                    <button type="submit" class="btn btn-danger">Terminate All Other Sessions</button>
+                  </form>
+                <% } %>
+              <% } %>
             </div>
 
+
           <% } else if (tab === 'privacy') { %>
+
+            <%# ── Deletion Pending Banner ─────────────────────────── %>
+            <% if (deleteRequestedAt && deletionDeadline) { %>
+              <div class="privacy-deletion-banner">
+                <div>
+                  <div style="font-weight:700;color:#fca5a5;margin-bottom:4px">🗑️ Account Deletion Scheduled</div>
+                  <div style="font-size:0.82rem;color:#f87171">
+                    Your account and all data will be permanently deleted by <strong><%= deletionDeadline %></strong>.
+                  </div>
+                </div>
+                <form method="POST" action="/settings/privacy/cancel-deletion" style="margin:0">
+                  <button type="submit" class="btn btn-sm" style="background:rgba(239,68,68,0.15);color:#fca5a5;border:1px solid rgba(239,68,68,0.3)">
+                    Cancel Deletion
+                  </button>
+                </form>
+              </div>
+            <% } %>
+
+            <%# ── Privacy Preferences ─────────────────────────────── %>
             <div class="settings-section">
-              <h3>Data Export</h3>
-              <p style="font-size:0.875rem;margin-bottom:14px">Download a complete copy of your My_Login data — accounts, breach history, and activity.</p>
-              <button class="btn btn-ghost" onclick="showToast('Export started. You will receive an email shortly.','success')">📥 Export My Data (JSON)</button>
+              <h3>🛡️ Privacy Preferences</h3>
+              <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:18px">
+                Control how your data is used within Footmarq. Changes are saved immediately.
+              </p>
+              <form method="POST" action="/settings/privacy/preferences" id="privacyPrefsForm">
+                <% const prefs = [
+                  { key:'allowBreachCheck',      label:'Breach Monitoring',       desc:'Allow your emails to be checked against known breach databases.',   default: privacySettings.allowBreachCheck },
+                  { key:'allowDigitalFootprint', label:'Digital Footprint Scan',  desc:'Include your emails in account discovery and digital footprint analysis.', default: privacySettings.allowDigitalFootprint },
+                  { key:'allowAnalytics',        label:'Anonymous Analytics',     desc:'Share anonymised, non-personal usage data to help improve Footmarq.', default: privacySettings.allowAnalytics },
+                ]; %>
+                <% prefs.forEach(function(p) { %>
+                  <div class="privacy-pref-row">
+                    <div>
+                      <div style="font-size:0.875rem;font-weight:500;color:var(--text-primary)"><%= p.label %></div>
+                      <div style="font-size:0.78rem;color:var(--text-muted);margin-top:2px"><%= p.desc %></div>
+                    </div>
+                    <label class="privacy-toggle" title="<%= p.label %>">
+                      <input type="checkbox" name="<%= p.key %>" <%= p.default ? 'checked' : '' %>
+                        onchange="document.getElementById('privacyPrefsForm').submit()">
+                      <span class="toggle-track"></span>
+                    </label>
+                  </div>
+                <% }); %>
+              </form>
             </div>
+
             <div class="divider"></div>
+
+            <%# ── Data Export ──────────────────────────────────────── %>
             <div class="settings-section">
-              <h3>Disconnect Gmail</h3>
-              <p style="font-size:0.875rem;margin-bottom:14px">Remove Gmail access. This stops all future scans. Your existing account data is retained.</p>
-              <button class="btn btn-danger" onclick="showToast('Gmail disconnected','info')">Disconnect Gmail Access</button>
+              <h3>📥 Export My Data</h3>
+              <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:16px">
+                Download a complete copy of your Footmarq data — profile, linked emails, breach history, scan logs, and discovered accounts.
+                A JSON file will be sent to <strong style="color:var(--text-primary)"><%= user.email %></strong> and is also available as a direct download.
+              </p>
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <form method="POST" action="/settings/privacy/export" style="margin:0">
+                  <button type="submit" class="btn btn-ghost" id="exportEmailBtn" onclick="this.disabled=true;this.textContent='Sending…'">
+                    📧 Send to My Email
+                  </button>
+                </form>
+                <a href="/settings/privacy/export/download" class="btn btn-ghost" id="exportDownloadBtn" style="text-decoration:none">
+                  ⬇️ Download JSON
+                </a>
+              </div>
             </div>
+
             <div class="divider"></div>
+
+            <%# ── Gmail Disconnect ─────────────────────────────────── %>
             <div class="settings-section">
-              <h3>Delete Account</h3>
-              <p style="font-size:0.875rem;margin-bottom:14px;color:var(--text-secondary)">Permanently delete your My_Login account and all associated data. <strong style="color:var(--risk-critical)">This action cannot be undone.</strong></p>
-              <button class="btn btn-danger" onclick="if(confirm('Are you sure? This deletes everything permanently.')) showToast('Account deletion scheduled','info')">🗑️ Delete My Account</button>
+              <h3>🔌 Disconnect Gmail</h3>
+              <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:16px">
+                Remove Gmail OAuth access. This stops all future scans. Your existing discovered account data is retained unless you also delete your account.
+              </p>
+              <% if (connectedGmails && connectedGmails.length > 0) { %>
+                <% connectedGmails.forEach(function(g) { %>
+                  <div class="gmail-disconnect-card">
+                    <div style="display:flex;align-items:center;gap:10px">
+                      <div class="gmail-avatar"><%= g.avatar || g.email[0].toUpperCase() %></div>
+                      <div>
+                        <div style="font-size:0.875rem;font-weight:600;color:var(--text-primary)"><%= g.email %></div>
+                        <div style="font-size:0.75rem;color:var(--text-muted)">
+                          Last scanned: <%= g.lastScanAt ? new Date(g.lastScanAt).toLocaleDateString('en-GB') : 'Never' %> ·
+                          <%= g.totalAccountsDiscovered %> accounts found
+                        </div>
+                      </div>
+                    </div>
+                    <form method="POST" action="/settings/privacy/disconnect-gmail" style="margin:0">
+                      <input type="hidden" name="emailId" value="<%= g._id %>">
+                      <button type="submit" class="btn btn-danger btn-sm"
+                        onclick="return confirm('Disconnect Gmail from <%= g.email %>?')">
+                        Disconnect
+                      </button>
+                    </form>
+                  </div>
+                <% }); %>
+                <% if (connectedGmails.length > 1) { %>
+                  <form method="POST" action="/settings/privacy/disconnect-gmail" style="margin-top:12px">
+                    <button type="submit" class="btn btn-danger btn-sm"
+                      onclick="return confirm('Disconnect ALL connected Gmail accounts?')">
+                      🔌 Disconnect All Gmail Accounts
+                    </button>
+                  </form>
+                <% } %>
+              <% } else { %>
+                <div class="privacy-empty-state">
+                  ✅ No Gmail accounts are currently connected.
+                </div>
+              <% } %>
             </div>
+
+            <div class="divider"></div>
+
+            <%# ── Delete Account ───────────────────────────────────── %>
+            <div class="settings-section">
+              <h3>🗑️ Delete Account</h3>
+              <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:6px">
+                Permanently delete your Footmarq account and <strong style="color:var(--risk-critical)">all associated data</strong>.
+                This includes your profile, all linked email accounts, discovered accounts, and breach history.
+              </p>
+              <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:16px">
+                Deletion is <strong>scheduled 30 days</strong> after your request so you have time to change your mind.
+                A confirmation email will be sent immediately.
+              </p>
+              <% if (!deleteRequestedAt) { %>
+                <button class="btn btn-danger" id="deleteAccountBtn" onclick="showDeleteConfirm()">
+                  🗑️ Request Account Deletion
+                </button>
+              <% } else { %>
+                <div style="font-size:0.875rem;color:var(--risk-critical);margin-bottom:10px">
+                  ⚠️ Deletion already scheduled. Your account will be deleted by <strong><%= deletionDeadline %></strong>.
+                </div>
+                <form method="POST" action="/settings/privacy/cancel-deletion" style="margin:0">
+                  <button type="submit" class="btn btn-ghost">✅ Cancel Deletion Request</button>
+                </form>
+              <% } %>
+            </div>
+
+            <%# ── Delete Confirmation Modal ────────────────────────── %>
+            <div id="deleteModal" class="privacy-modal-overlay" style="display:none">
+              <div class="privacy-modal-box">
+                <div style="font-size:2rem;margin-bottom:12px">🗑️</div>
+                <h3 style="color:var(--risk-critical);margin-bottom:8px">Delete Account?</h3>
+                <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:6px;line-height:1.5">
+                  This will schedule <strong>permanent deletion</strong> of your Footmarq account and all your data.
+                  You have <strong>30 days</strong> to cancel before anything is removed.
+                </p>
+                <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:20px">
+                  Type <strong style="color:var(--text-primary)">DELETE</strong> to confirm:
+                </p>
+                <input type="text" id="deleteConfirmInput" class="form-input" placeholder="Type DELETE here"
+                  style="margin-bottom:16px" oninput="checkDeleteInput()">
+                <div style="display:flex;gap:10px">
+                  <form method="POST" action="/settings/privacy/delete-account" style="margin:0;flex:1">
+                    <button type="submit" id="deleteConfirmBtn" class="btn btn-danger" style="width:100%" disabled>
+                      Confirm Deletion
+                    </button>
+                  </form>
+                  <button onclick="hideDeleteModal()" class="btn btn-ghost" style="flex:1">Cancel</button>
+                </div>
+              </div>
+            </div>
+
           <% } %>
 
         </div>
@@ -184,5 +564,26 @@
 </div>
 <div id="toast-container" class="toast-container"></div>
 <script src="/js/app.js"></script>
+<script>
+  // ── Privacy Modal ───────────────────────────────────────────
+  function showDeleteConfirm() {
+    document.getElementById('deleteModal').style.display = 'flex';
+    setTimeout(() => document.getElementById('deleteConfirmInput').focus(), 50);
+  }
+  function hideDeleteModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+    document.getElementById('deleteConfirmInput').value = '';
+    document.getElementById('deleteConfirmBtn').disabled = true;
+  }
+  function checkDeleteInput() {
+    const val = document.getElementById('deleteConfirmInput').value.trim().toUpperCase();
+    document.getElementById('deleteConfirmBtn').disabled = (val !== 'DELETE');
+  }
+  // Close modal on backdrop click
+  document.getElementById('deleteModal') &&
+    document.getElementById('deleteModal').addEventListener('click', function(e) {
+      if (e.target === this) hideDeleteModal();
+    });
+</script>
 </body>
 </html>

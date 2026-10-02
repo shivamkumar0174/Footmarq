@@ -18,13 +18,28 @@ const userSchema = new mongoose.Schema({
   otpExpiresAt: { type: Date },
   plan: { type: String, enum: ['Free', 'Pro', 'Enterprise'], default: 'Free' },
   joinedDate: { type: String, default: 'September 2026' },
+  deleteRequestedAt: { type: Date, default: null },
+  lastBreachScanAt: { type: Date, default: null },
   settings: {
     twoFactorEnabled: { type: Boolean, default: true },
     darkWebMonitoring: { type: Boolean, default: true },
     monthlyReports: { type: Boolean, default: true },
     instantBreachAlerts: { type: Boolean, default: true },
     marketingEmails: { type: Boolean, default: false }
-  }
+  },
+  privacySettings: {
+    allowAnalytics: { type: Boolean, default: false },
+    allowBreachCheck: { type: Boolean, default: true },
+    allowDigitalFootprint: { type: Boolean, default: true }
+  },
+  sessions: [{
+    token:     { type: String, required: true },
+    device:    { type: String, default: 'Unknown Device' },
+    ip:        { type: String, default: '0.0.0.0' },
+    location:  { type: String, default: 'Unknown' },
+    loginAt:   { type: Date, default: Date.now },
+    lastSeen:  { type: Date, default: Date.now }
+  }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

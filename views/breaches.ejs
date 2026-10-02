@@ -3,10 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Breach Monitor — My_Login</title>
+  <title>Breach Monitor — Footmarq</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .filter-tab {
+      padding: 8px 16px;
+      border-radius: var(--radius-sm, 6px);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-decoration: none;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      transition: all 0.2s ease;
+    }
+    .filter-tab:hover {
+      color: var(--text-primary);
+      border-color: var(--text-muted);
+    }
+    .filter-tab.active {
+      background: var(--accent, #6366f1);
+      color: #fff;
+      border-color: var(--accent, #6366f1);
+    }
+    .breach-card.resolved-card {
+      opacity: 0.75;
+      border-color: rgba(34, 197, 94, 0.3);
+      background: rgba(34, 197, 94, 0.02);
+    }
+    .spin {
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
 <div class="app-shell">
@@ -15,6 +49,10 @@
     <header class="topbar">
       <div class="topbar-title">Breach Monitor</div>
       <div class="topbar-actions">
+        <button id="scan-btn" class="btn btn-primary btn-sm" onclick="runBreachScan()" style="display:flex;align-items:center;gap:6px;font-weight:600;">
+          <span id="scan-icon">🔍</span>
+          <span id="scan-btn-text">Run Breach Scan</span>
+        </button>
         <a href="/" class="btn btn-ghost btn-sm" title="Go to Main Page" style="display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:0.82rem;font-weight:600;text-decoration:none;">
           🏠 Home Page
         </a>
@@ -25,73 +63,212 @@
         </a>
       </div>
     </header>
+
     <div class="page-body">
-      <div class="page-header">
-        <h1>Breach Monitor</h1>
-        <p class="page-subtitle">Your emails checked against the HaveIBeenPwned database. <%= breaches.length %> active breaches found.</p>
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;">
+        <div>
+          <h1>Breach Monitor</h1>
+          <p class="page-subtitle">Monitoring your accounts and linked emails against live breach intelligence database.</p>
+        </div>
       </div>
 
-      <!-- Stats -->
+      <!-- Summary Stats -->
       <div style="display:flex;gap:14px;margin-bottom:28px;flex-wrap:wrap">
         <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:var(--radius);padding:18px 24px;min-width:140px;text-align:center">
-          <div style="font-size:2rem;font-weight:800;color:var(--risk-critical)"><%= breaches.length %></div>
+          <div id="stat-active-count" style="font-size:2rem;font-weight:800;color:var(--risk-critical)"><%= activeBreachesCount %></div>
           <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">Active Breaches</div>
         </div>
         <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 24px;min-width:140px;text-align:center">
-          <div style="font-size:2rem;font-weight:800;color:var(--text-primary)"><%= accounts.filter(a=>a.isBreached).length %></div>
+          <div style="font-size:2rem;font-weight:800;color:var(--text-primary)"><%= affectedAccountsCount %></div>
           <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em">Accounts Affected</div>
         </div>
-        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 24px;flex:1">
-          <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:6px">Last breach check</div>
-          <div style="font-size:0.9rem;font-weight:600;color:var(--text-primary)">2 hours ago</div>
-          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">Checked weekly against HIBP database · 14B+ records</div>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 24px;flex:1;min-width:240px">
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:6px">Last Breach Scan</div>
+          <div id="last-scan-display" style="font-size:0.9rem;font-weight:600;color:var(--text-primary)"><%= lastScanTimeFormatted %></div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">Automated live matching & HIBP API threat database</div>
         </div>
       </div>
 
-      <!-- Breach Alert Banner -->
-      <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:var(--radius);padding:16px 20px;display:flex;align-items:center;gap:14px;margin-bottom:24px">
-        <span style="font-size:1.4rem">🚨</span>
-        <div>
-          <div style="font-size:0.9rem;font-weight:700;color:var(--risk-critical)">Action Required</div>
-          <div style="font-size:0.82rem;color:var(--text-secondary)">Change passwords on all breached accounts immediately. Use a unique password for each service. Enable 2FA where available.</div>
+      <% if (activeBreachesCount > 0) { %>
+        <!-- Breach Alert Banner -->
+        <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:var(--radius);padding:16px 20px;display:flex;align-items:center;gap:14px;margin-bottom:24px">
+          <span style="font-size:1.4rem">🚨</span>
+          <div>
+            <div style="font-size:0.9rem;font-weight:700;color:var(--risk-critical)">Action Required (<%= activeBreachesCount %> Unresolved)</div>
+            <div style="font-size:0.82rem;color:var(--text-secondary)">Change passwords on all breached accounts immediately. Use unique credentials and enable 2FA where available.</div>
+          </div>
         </div>
+      <% } %>
+
+      <!-- Filter Bar -->
+      <div style="display:flex;gap:10px;margin-bottom:20px;align-items:center;">
+        <span style="font-size:0.85rem;font-weight:600;color:var(--text-muted);">Filter:</span>
+        <a href="/breaches?status=unresolved" class="filter-tab <%= filterStatus === 'unresolved' ? 'active' : '' %>">
+          Unresolved (<%= activeBreachesCount %>)
+        </a>
+        <a href="/breaches?status=resolved" class="filter-tab <%= filterStatus === 'resolved' ? 'active' : '' %>">
+          Resolved (<%= resolvedBreachesCount %>)
+        </a>
+        <a href="/breaches?status=all" class="filter-tab <%= filterStatus === 'all' ? 'active' : '' %>">
+          All (<%= allBreachesCount %>)
+        </a>
       </div>
 
       <!-- Breach List -->
-      <% breaches.forEach(function(breach) { %>
-        <div class="breach-card">
-          <div class="breach-header">
-            <div>
-              <div class="breach-service">🚨 <%= breach.service %></div>
-              <div class="breach-date">Breached <%= breach.breachDate %> · Detected <%= breach.detectedDate %></div>
-            </div>
-            <span class="risk-badge critical" style="align-self:flex-start"><span class="dot"></span><%= breach.severity.toUpperCase() %></span>
-          </div>
-          <div class="breach-email">📧 Exposed email: <strong style="color:var(--text-primary)"><%= breach.email %></strong></div>
-          <div class="breach-desc"><%= breach.description %></div>
-          <div class="data-types">
-            <% breach.dataTypes.forEach(function(dt) { %>
-              <span class="data-type-tag"><%= dt %></span>
-            <% }) %>
-          </div>
-          <div class="breach-meta">
-            <span>👥 <span class="breach-count"><%= breach.pwnCount %></span> records exposed</span>
-            <span>·</span>
-            <span style="color:var(--risk-critical);font-weight:600">● Unresolved</span>
-          </div>
-          <div style="display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
-            <button class="btn btn-primary btn-sm" onclick="showToast('Open <%= breach.service %> to change your password','warning')">
-              🔑 Change Password
-            </button>
-            <button class="btn btn-ghost btn-sm" onclick="showToast('Marked as reviewed','success')">✓ Mark Reviewed</button>
-            <a href="/cleanup" class="btn btn-danger btn-sm">🗑️ Delete Account</a>
-          </div>
+      <% if (breaches.length === 0) { %>
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:40px;text-align:center;color:var(--text-muted)">
+          <span style="font-size:2.5rem;display:block;margin-bottom:12px">🛡️</span>
+          <h3 style="color:var(--text-primary);margin-bottom:6px">No <%= filterStatus === 'resolved' ? 'resolved' : 'active' %> breaches found</h3>
+          <p style="font-size:0.85rem">Your linked email accounts and credentials are clean under this filter.</p>
         </div>
-      <% }) %>
+      <% } else { %>
+        <% breaches.forEach(function(breach) { %>
+          <div class="breach-card <%= breach.resolved ? 'resolved-card' : '' %>" id="breach-card-<%= breach._id %>">
+            <div class="breach-header">
+              <div>
+                <div class="breach-service">
+                  <% if (breach.resolved) { %>
+                    ✅ <%= breach.service %> <span style="font-size:0.75rem;color:var(--risk-low);font-weight:600;margin-left:6px">(Resolved)</span>
+                  <% } else { %>
+                    🚨 <%= breach.service %>
+                  <% } %>
+                </div>
+                <div class="breach-date">Breached <%= breach.breachDate %> · Detected <%= breach.detectedDate %></div>
+              </div>
+              <span class="risk-badge <%= breach.severity %>" style="align-self:flex-start"><span class="dot"></span><%= breach.severity.toUpperCase() %></span>
+            </div>
+            <div class="breach-email">📧 Exposed email: <strong style="color:var(--text-primary)"><%= breach.email %></strong></div>
+            <div class="breach-desc"><%= breach.description %></div>
+            <div class="data-types">
+              <% (breach.dataTypes || []).forEach(function(dt) { %>
+                <span class="data-type-tag"><%= dt %></span>
+              <% }) %>
+            </div>
+            <div class="breach-meta">
+              <span>👥 <span class="breach-count"><%= breach.pwnCount %></span> records exposed</span>
+              <span>·</span>
+              <% if (breach.resolved) { %>
+                <span style="color:var(--risk-low);font-weight:600">● Resolved</span>
+              <% } else { %>
+                <span style="color:var(--risk-critical);font-weight:600">● Unresolved</span>
+              <% } %>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);flex-wrap:wrap">
+              <button class="btn btn-primary btn-sm" onclick="showToast('Open <%= breach.service %> to change your password','warning')">
+                🔑 Change Password
+              </button>
+
+              <% if (breach.resolved) { %>
+                <button class="btn btn-ghost btn-sm" onclick="toggleResolveBreach('<%= breach._id %>', false)">
+                  ↩️ Mark Unresolved
+                </button>
+              <% } else { %>
+                <button class="btn btn-ghost btn-sm" onclick="toggleResolveBreach('<%= breach._id %>', true)">
+                  ✓ Mark Reviewed & Resolved
+                </button>
+              <% } %>
+
+              <button class="btn btn-danger btn-sm" onclick="dismissBreach('<%= breach._id %>')">
+                🗑️ Dismiss Alert
+              </button>
+            </div>
+          </div>
+        <% }) %>
+      <% } %>
     </div>
   </div>
 </div>
+
 <div id="toast-container" class="toast-container"></div>
 <script src="/js/app.js"></script>
+
+<script>
+async function runBreachScan() {
+  const scanBtn = document.getElementById('scan-btn');
+  const scanIcon = document.getElementById('scan-icon');
+  const scanText = document.getElementById('scan-btn-text');
+
+  scanBtn.disabled = true;
+  scanIcon.classList.add('spin');
+  scanIcon.textContent = '⏳';
+  scanText.textContent = 'Scanning...';
+
+  try {
+    const res = await fetch('/breaches/scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      showToast(data.message || 'Scan completed successfully', 'success');
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } else {
+      showToast(data.error || 'Scan failed', 'error');
+      scanBtn.disabled = false;
+      scanIcon.classList.remove('spin');
+      scanIcon.textContent = '🔍';
+      scanText.textContent = 'Run Breach Scan';
+    }
+  } catch (err) {
+    showToast('Network error during breach scan', 'error');
+    scanBtn.disabled = false;
+    scanIcon.classList.remove('spin');
+    scanIcon.textContent = '🔍';
+    scanText.textContent = 'Run Breach Scan';
+  }
+}
+
+async function toggleResolveBreach(breachId, resolvedState) {
+  try {
+    const res = await fetch(`/breaches/${breachId}/resolve`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ resolved: resolvedState })
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      showToast(data.message, 'success');
+      setTimeout(() => {
+        window.location.reload();
+      }, 600);
+    } else {
+      showToast(data.error || 'Operation failed', 'error');
+    }
+  } catch (err) {
+    showToast('Network error', 'error');
+  }
+}
+
+async function dismissBreach(breachId) {
+  if (!confirm('Are you sure you want to dismiss this breach alert?')) return;
+
+  try {
+    const res = await fetch(`/breaches/${breachId}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      showToast(data.message, 'success');
+      const card = document.getElementById(`breach-card-${breachId}`);
+      if (card) {
+        card.style.transition = 'all 0.3s ease';
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(-10px)';
+        setTimeout(() => card.remove(), 300);
+      }
+    } else {
+      showToast(data.error || 'Dismiss failed', 'error');
+    }
+  } catch (err) {
+    showToast('Network error', 'error');
+  }
+}
+</script>
 </body>
 </html>

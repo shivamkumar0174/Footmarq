@@ -2,6 +2,7 @@ const User = require('../models/User');
 const EmailAccount = require('../models/EmailAccount');
 const { getCurrentUser } = require('../utils/helpers');
 const { sendOtpEmail } = require('../services/emailService');
+const { generateSessionToken, parseDevice, getClientIp } = require('../utils/sessionUtils');
 
 // Landing Page
 exports.getLanding = async (req, res) => {
@@ -73,9 +74,16 @@ exports.postVerifyOtp = async (req, res) => {
     // OTP is valid! Clear OTP fields and establish session
     user.otpCode = undefined;
     user.otpExpiresAt = undefined;
+
+    // Record new session
+    const sessionToken = generateSessionToken();
+    const ip = getClientIp(req);
+    const device = parseDevice(req.headers['user-agent'] || '');
+    user.sessions.push({ token: sessionToken, device, ip, location: 'Unknown', loginAt: new Date(), lastSeen: new Date() });
     await user.save();
 
     res.cookie('userEmail', user.email, { httpOnly: true, secure: true, sameSite: 'lax' });
+    res.cookie('sessionToken', sessionToken, { httpOnly: true, secure: true, sameSite: 'lax' });
     res.redirect('/dashboard');
   } catch (err) {
     res.render('auth/verify-otp', { page: 'verify-otp', email: req.body.email || '', error: err.message, success: null });
@@ -105,8 +113,19 @@ exports.resendOtp = async (req, res) => {
 };
 
 // Auth Logout
-exports.logout = (req, res) => {
+exports.logout = async (req, res) => {
+  try {
+    const sessionToken = req.cookies.sessionToken;
+    if (sessionToken && req.cookies.userEmail) {
+      const user = await User.findOne({ email: req.cookies.userEmail.toLowerCase().trim() });
+      if (user) {
+        user.sessions = user.sessions.filter(s => s.token !== sessionToken);
+        await user.save();
+      }
+    }
+  } catch (_) { /* silent — always log out */ }
   res.clearCookie('userEmail');
+  res.clearCookie('sessionToken');
   res.redirect('/');
 };
 
@@ -242,8 +261,16 @@ exports.googleCallback = async (req, res) => {
     // Automatically trigger Gmail account discovery scan
     await scanUserGmail(user);
 
-    // Set auth cookie
+    // Record new session
+    const sessionToken = generateSessionToken();
+    const ip = getClientIp(req);
+    const device = parseDevice(req.headers['user-agent'] || '');
+    user.sessions.push({ token: sessionToken, device, ip, location: 'Unknown', loginAt: new Date(), lastSeen: new Date() });
+    await user.save();
+
+    // Set auth cookies
     res.cookie('userEmail', user.email, { httpOnly: true, secure: true, sameSite: 'lax' });
+    res.cookie('sessionToken', sessionToken, { httpOnly: true, secure: true, sameSite: 'lax' });
     res.redirect('/dashboard');
   } catch (err) {
     console.error('Google OAuth Callback Error:', err);
@@ -298,7 +325,15 @@ exports.googleSandbox = async (req, res) => {
     // Run sample account discovery scan
     await scanUserGmail(user);
 
+    // Record new session
+    const sessionToken = generateSessionToken();
+    const ip = getClientIp(req);
+    const device = parseDevice(req.headers['user-agent'] || '');
+    user.sessions.push({ token: sessionToken, device, ip, location: 'Unknown', loginAt: new Date(), lastSeen: new Date() });
+    await user.save();
+
     res.cookie('userEmail', user.email, { httpOnly: true, secure: true, sameSite: 'lax' });
+    res.cookie('sessionToken', sessionToken, { httpOnly: true, secure: true, sameSite: 'lax' });
     res.redirect('/dashboard');
   } catch (err) {
     res.redirect('/login');

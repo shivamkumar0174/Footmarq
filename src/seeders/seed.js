@@ -30,6 +30,7 @@ const seedData = async () => {
       avatar: 'SK',
       plan: currentUser.plan || 'Free',
       joinedDate: currentUser.joinedDate || 'September 2026',
+      lastBreachScanAt: new Date(Date.now() - 2 * 3600 * 1000),
       settings: currentUser.settings || {
         twoFactorEnabled: true,
         darkWebMonitoring: true,

@@ -12,6 +12,7 @@ const breachSchema = new mongoose.Schema({
   severity: { type: String, enum: ['critical', 'high', 'moderate', 'low'], default: 'high' },
   pwnCount: { type: String, default: 'Multiple' },
   resolved: { type: Boolean, default: false },
+  resolvedAt: { type: Date, default: null },
   userActionNeeded: { type: String, default: 'Change password on service immediately' }
 }, { timestamps: true });
 
